@@ -131,7 +131,6 @@ window.addEventListener("DOMContentLoaded", () => {
         start: "top top",
         scrub: 1,
         end: "+=400",
-        markers: true,
         anticipatePin: 1,
     });
 });
