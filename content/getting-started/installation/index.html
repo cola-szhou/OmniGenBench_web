@@ -11,10 +11,10 @@
       
       
       
-        <link rel="prev" href="../../..">
+        <link rel="prev" href="../basic-introduction/">
       
       
-        <link rel="next" href="../quick-start/">
+        <link rel="next" href="../command-line-usage/">
       
       
       <link rel="icon" href="../../../assets/images/favicon.png">
@@ -248,7 +248,7 @@
     
     
       <li class="md-tabs__item md-tabs__item--active">
-        <a href="./" class="md-tabs__link">
+        <a href="../basic-introduction/" class="md-tabs__link">
           
   
   
@@ -439,6 +439,29 @@
                 
   
   
+  
+  
+    <li class="md-nav__item">
+      <a href="../basic-introduction/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Basic Introduction
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
     
   
   
@@ -507,14 +530,29 @@
     </span>
   </a>
   
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#usage" class="md-nav__link">
+    <nav class="md-nav" aria-label="Installation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#installation-with-pypi" class="md-nav__link">
     <span class="md-ellipsis">
-      Usage
+      Installation with PyPI
     </span>
   </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#installation-from-source" class="md-nav__link">
+    <span class="md-ellipsis">
+      Installation from Source
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -561,12 +599,81 @@
   
   
     <li class="md-nav__item">
-      <a href="../quick-start/" class="md-nav__link">
+      <a href="../command-line-usage/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
-    Quick Start
+    Command-Line Usage
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../python-api-usage/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Python API Usage
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../supported-models/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Supported Models
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../supported-benchmarks/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Supported Benchmarks
     
   </span>
   
@@ -764,14 +871,29 @@
     </span>
   </a>
   
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#usage" class="md-nav__link">
+    <nav class="md-nav" aria-label="Installation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#installation-with-pypi" class="md-nav__link">
     <span class="md-ellipsis">
-      Usage
+      Installation with PyPI
     </span>
   </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#installation-from-source" class="md-nav__link">
+    <span class="md-ellipsis">
+      Installation from Source
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -822,35 +944,30 @@
 
 
 <h1 id="installation">Installation</h1>
+<p>We provide two installation methods: <a href="#installation-with-pip">PyPI</a> and <a href="#installation-from-source">Source Installation</a>.</p>
 <h2 id="prerequisites">Prerequisites</h2>
+<p>Before you begin, ensure you have the following installed:</p>
 <ul>
-<li>Python 3.8+</li>
-<li>Git</li>
+<li>Python 3.10+</li>
+<li>PyTorch 2.5+</li>
+<li>Transformers 4.46.0+</li>
 </ul>
 <h2 id="installation_1">Installation</h2>
-<ol>
-<li>Clone the repository</li>
-</ol>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/COLA-Laboratory/OmniGenBench.git
+<h3 id="installation-with-pypi">Installation with PyPI</h3>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>pip<span class="w"> </span>install<span class="w"> </span>omnigenome<span class="w"> </span>-U
 </span></code></pre></div>
-<ol>
-<li>Install the dependencies</li>
-</ol>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>pip<span class="w"> </span>install<span class="w"> </span>-r<span class="w"> </span>requirements.txt
-</span></code></pre></div>
-<ol>
-<li>Install the dependencies</li>
-</ol>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>pip<span class="w"> </span>install<span class="w"> </span>-r<span class="w"> </span>requirements.txt
-</span></code></pre></div>
-<h2 id="usage">Usage</h2>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>python<span class="w"> </span>main.py
+<h3 id="installation-from-source">Installation from Source</h3>
+<p>For majority of OmniGenBench users, installing from a pre-built package is recommended. However, if you want to install from source, you can do so by following the steps below.</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/COLA-Laboratory/OmniGenBench.git
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="nb">cd</span><span class="w"> </span>OmniGenBench
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span>.
 </span></code></pre></div>
 <h2 id="contributing">Contributing</h2>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/COLA-Laboratory/OmniGenBench.git
+<p>If you are interested in contributing to OmniGenBench, please refer to the <a href="https://github.com/COLA-Laboratory/OmniGenBench/blob/master/CONTRIBUTING.md">Contributing Guide</a> for details.</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/COLA-Laboratory/OmniGenBench.git
 </span></code></pre></div>
 <h2 id="license">License</h2>
-<p>This project is licensed under the MIT License. See the <a href="LICENSE">LICENSE</a> file for details.</p>
+<p>This project is licensed under the Apache License 2.0. See the <a href="https://github.com/COLA-Laboratory/OmniGenBench/blob/master/LICENSE">LICENSE</a> file for details.</p>
 <h2 id="acknowledgements">Acknowledgements</h2>
 <p>We would like to thank the following projects for their contributions to this project:</p>
 <ul>
@@ -971,7 +1088,7 @@
       <nav class="md-footer__inner md-grid" aria-label="Footer" >
         
           
-          <a href="../../.." class="md-footer__link md-footer__link--prev" aria-label="Previous: Home">
+          <a href="../basic-introduction/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Basic Introduction">
             <div class="md-footer__button md-icon">
               
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
@@ -981,20 +1098,20 @@
                 Previous
               </span>
               <div class="md-ellipsis">
-                Home
+                Basic Introduction
               </div>
             </div>
           </a>
         
         
           
-          <a href="../quick-start/" class="md-footer__link md-footer__link--next" aria-label="Next: Quick Start">
+          <a href="../command-line-usage/" class="md-footer__link md-footer__link--next" aria-label="Next: Command-Line Usage">
             <div class="md-footer__title">
               <span class="md-footer__direction">
                 Next
               </span>
               <div class="md-ellipsis">
-                Quick Start
+                Command-Line Usage
               </div>
             </div>
             <div class="md-footer__button md-icon">
