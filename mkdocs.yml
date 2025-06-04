@@ -1,0 +1,104 @@
+site_name: OmniGenBench
+site_description: A website for the OmniGenBench project
+
+theme:
+  name: material
+  features:
+    - navigation.tabs
+    - navigation.prune
+    - repository
+    - content.code.copy
+    - content.code.select
+    - content.code.annotate
+    - navigation.footer
+    - content.tooltips
+
+
+  palette:
+    # Palette toggle for light mode
+    - scheme: default
+      primary: grey
+      accent: indigo
+      toggle:
+        icon: material/lightbulb-outline
+        name: Switch to dark mode
+    # Palette toggle for dark mode
+    - scheme: slate
+      primary: black
+      accent: indigo
+      toggle:
+        icon: material/lightbulb
+        name: Switch to light mode
+  icon:
+    repo: fontawesome/brands/github
+
+# Custom navigation order
+nav:
+  - Home: index.md
+  - Getting Started:
+    - Installation: content/getting-started/installation.md
+    - Quick Start: content/getting-started/quick-start.md
+  - Tutorials:
+    - Overview: content/tutorial/overview.md
+    - RNA Design: content/tutorial/rna-design.md
+    - RNA Secondary Structure Prediction: content/tutorial/rna-secondary-structure-prediction.md
+    - RNA Embedding: content/tutorial/RNA-embedding.md
+    - RNA Augmentation: content/tutorial/rna-augmentation.md
+  - API Reference:
+    - Overview: content/api/overview.md
+  - Contributing:
+    - Guidelines: content/contributing/guidelines.md
+    - Development: content/contributing/development.md
+
+extra_css:
+  - stylesheets/extra.css
+
+extra_javascript:
+  - https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js
+  - https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js
+  - javascripts/gsap-animations.js
+  - javascripts/actions.js
+  - javascripts/feedback.js
+repo_url: https://github.com/COLA-Laboratory/OmniGenBench
+repo_name: COLA-Laboratory/OmniGenBench
+
+
+markdown_extensions:
+  - attr_list
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences
+  - md_in_html
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+
+extra:
+  analytics: 
+    feedback:
+      title: Was this page helpful?
+      ratings:
+        - icon: material/emoticon-happy-outline
+          name: This page was helpful
+          data: 1
+          note: >-
+            Thanks for your feedback!
+        - icon: material/emoticon-sad-outline
+          name: This page could be improved
+          data: 0
+          note: >-
+            Thanks for your feedback!</a>.
+
+
+plugins:
+  - privacy
+  - search
+  - git-revision-date-localized
+
+copyright: |
+    © 2025 OmniGenBench Developers. Licensed under the 
+    <a href="https://www.apache.org/licenses/LICENSE-2.0" target="_blank" rel="noopener">Apache License 2.0</a>.

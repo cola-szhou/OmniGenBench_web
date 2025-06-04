@@ -1,0 +1,191 @@
+body.index .md-main__inner{
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+body.index .md-content__inner,
+body.index .md-content__inner > * {
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+body.index .md-content h1:first-child {
+    display: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+
+body.index .hero-container {
+    height: 100vh !important;
+    width: 100vw !important;
+    background-image: url('../assets/images/hero-image.jpeg');
+    background-size: cover;
+    background-position: bottom center;
+    background-repeat: no-repeat;
+    position: relative;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: center;
+}
+
+body.index .md-content__inner::before {
+    content: none !important;
+    display: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+body.index .hero-caption {
+    position: relative !important;
+    margin-left: 0 !important;
+    margin-bottom: -10vh !important;
+    max-width: 55% !important;
+    width: auto !important;
+    /* background-color: #a9b7c3 !important; */
+    background-color: rgba(169, 183, 195, 0.7) !important;
+    backdrop-filter: blur(10px) !important;
+    -webkit-backdrop-filter: blur(10px) !important;
+    border-radius: 12px !important;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1) !important;
+
+    height: auto !important;
+    padding: 2% !important;
+}
+
+/* Hero Caption Elements */
+body.index .hero-title {
+    font-size: 2rem;
+    font-weight: bold;
+    text-align: left;
+    margin-bottom: 10px;
+    margin-top: 0px;
+    color: white;
+}
+
+body.index .hero-description {
+    text-align: left;
+    margin-bottom: 20px;
+    font-size: 1rem;
+    color: white;
+}
+
+body.index .hero-buttons {
+    display: flex;
+    gap: 40px;
+    justify-content: left;
+}
+
+body.index .hero-learn-more {
+    color: white;
+    font-weight: bold;
+}
+
+/* Scroll Down Element */
+body.index .scroll-down {
+    position: relative;
+    left: 50%;
+    transform: translateX(-50%);
+    align-items: center;
+    justify-content: center;
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 5vh;
+}
+
+body.index .scroll-text {
+    color: darkslategrey;
+    font-size: 1rem;
+    font-weight: bold;
+    margin-bottom: 0px;
+    text-align: center;
+}
+
+body.index .scroll-down .my-icon img {
+    width: 50px;
+    height: 50px;
+    margin: 0px;
+    padding: 0px;
+    align-items: center;
+}
+
+.btn-outline-blue {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.5em 1.2em;
+    background-color: transparent;
+    color: var(--md-accent-fg-color);
+    border-radius: 4px;
+    text-decoration: none;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    font-weight: 500;
+    font-size: 0.9rem;
+    line-height: 1.2;
+    cursor: pointer;
+  }
+  
+  .btn-outline-blue:hover {
+    background-color: var(--md-accent-fg-color);
+    color: white;
+  }
+
+body.index .features-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.1rem;
+}
+
+body.index .feature-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    background-color: #f0f0f0;
+    border-radius: 12px;
+    padding: 1.5rem;
+    transition: background-color 0.3s ease;
+}
+
+body.index .feature-icon {
+    flex-shrink: 0;
+    width: 40px;
+    height: 40px;
+    background-color: #f0f0f0;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+    color: #c9d1d9;
+  }
+  
+body.index .feature-text h3 {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: black;
+  }
+  
+body.index .feature-text p {
+    margin-top: 0.5rem;
+    font-size: 0.95rem;
+    color: darkslategrey;
+}
+
+@keyframes heart {
+    0%, 100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-10px);
+    }
+  }
+.heart {
+animation: heart 1000ms infinite;
+}
