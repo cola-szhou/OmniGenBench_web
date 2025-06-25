@@ -4,15 +4,15 @@ document.addEventListener('DOMContentLoaded', function() {
     gsap.registerPlugin(ScrollTrigger);
 
     // Hero section animation
-    gsap.from(".hero-container", {
-        duration: 1.5,
-        y: 100,
-        opacity: 0,
-        ease: "power3.out"
-    });
+    // gsap.from(".hero-container", {
+    //     duration: 1.5,
+    //     y: 100,
+    //     opacity: 0,
+    //     ease: "power3.out"
+    // });
 
     // Animate the hero image
-    gsap.from(".hero-image", {
+    gsap.from(".hero-container", {
         duration: 2,
         scale: 1.2,
         opacity: 0,
@@ -37,19 +37,19 @@ document.addEventListener('DOMContentLoaded', function() {
     
 
     // Animate headings with scroll trigger
-    gsap.utils.toArray("h2").forEach(heading => {
-        gsap.from(heading, {
-            scrollTrigger: {
-                trigger: heading,
-                start: "top 80%",
-                toggleActions: "play none none play"
-            },
-            duration: 1,
-            y: 50,
-            opacity: 0,
-            ease: "power2.out"
-        });
-    });
+    // gsap.utils.toArray("h2").forEach(heading => {
+    //     gsap.from(heading, {
+    //         scrollTrigger: {
+    //             trigger: heading,
+    //             start: "top 80%",
+    //             toggleActions: "play none none play"
+    //         },
+    //         duration: 1,
+    //         y: 50,
+    //         opacity: 0,
+    //         ease: "power2.out"
+    //     });
+    // });
 
     // Features section animation
     gsap.from(".feature-item", {
@@ -58,7 +58,6 @@ document.addEventListener('DOMContentLoaded', function() {
             start: "top 30%",
             end: "bottom 70%",
             toggleActions: "restart none restart pause",
-            markers: true
         },
         duration: 1.5,
         y: 50,
@@ -82,6 +81,56 @@ document.addEventListener('DOMContentLoaded', function() {
         ease: "power2.out"
     });
 
-});
- 
+    gsap.from(".md-nav--primary", {
+        x: -100,
+        opacity: 0,
+        duration: 1,
+        delay: 0,
+        ease: "power2.out"
+    });
 
+    gsap.from(".md-nav--secondary", {
+        x: 100,
+        opacity: 0,
+        duration: 1,
+        delay: 0,
+        ease: "power2.out"
+    });
+
+    
+
+    const tl2 = gsap.timeline({ defaults: { ease: "power2.out", duration: 1 } });
+
+    tl2.from(".hero-title", {
+      y: 50,
+      opacity: 0
+    })
+    .from(".hero-description", {
+      y: 50,
+      opacity: 0
+    }, "-=0.5")
+    .from(".hero-buttons", {
+      y: 30,
+      opacity: 0
+    }, "-=0.5");
+});
+
+window.addEventListener("DOMContentLoaded", () => {
+    gsap.registerPlugin(ScrollTrigger);
+    gsap.defaults({ ease: "none", duration: 2 });
+
+    const tl = gsap.timeline();
+    tl.from(".red-box", {xPercent: -100})
+    .from(".blue-box", {xPercent: 100})
+    .from(".green-box", {xPercent: -100})
+    .from(".yellow-box", {xPercent: 100});
+
+    ScrollTrigger.create({
+        animation: tl,
+        trigger: ".container",
+        start: "top top",
+        scrub: 1,
+        end: "+=400",
+        anticipatePin: 1,
+    });
+});

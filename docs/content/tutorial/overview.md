@@ -13,7 +13,7 @@ We currently have the following tutorials:
 
 <div class="grid cards" markdown>
 
--   :material-clock-fast:{ .lg .middle } [__RNA Design__](rna-design.md)
+-   :material-dna:{ .lg .middle } [__RNA Design__](rna-design.md)
 
     ---
 
@@ -23,7 +23,7 @@ We currently have the following tutorials:
 
     **Estimated time:** XX-XX minutes
 
--   :material-clock-fast:{ .lg .middle } [__RNA Secondary Structure Prediction__](rna-secondary-structure-prediction.md)
+-   :material-graphql:{ .lg .middle } [__RNA Secondary Structure Prediction__](rna-secondary-structure-prediction.md)
 
     ---
 
@@ -33,7 +33,7 @@ We currently have the following tutorials:
 
     **Estimated time:** XX-XX minutes
 
--   :material-format-font:{ .lg .middle } [__RNA Embedding__](RNA-embedding.md)
+-   :material-chart-scatter-plot:{ .lg .middle } [__RNA Embedding__](RNA-embedding.md)
 
     ---
 
@@ -43,7 +43,7 @@ We currently have the following tutorials:
 
     **Estimated time:** XX-XX minutes
 
--   :material-scale-balance:{ .lg .middle } [__RNA Augmentation__](rna-augmentation.md)
+-   :material-flask:{ .lg .middle } [__RNA Augmentation__](rna-augmentation.md)
 
     ---
 
@@ -61,7 +61,7 @@ We currently have the following tutorials:
 
 1. **Installation**: Make sure you have OmniGenBench installed. See our [Installation Guide](../getting-started/installation.md) if you haven't already.
 
-2. **Quick Start**: If you're new to OmniGenBench, check out our [Quick Start Guide](../getting-started/quick-start.md) first.
+2. **Quick Start**: If you're new to OmniGenBench, check out our [Quick Start Guide](../getting-started/basic-introduction.md) first.
 
 3. **Choose Your Path**: Select the tutorial that best matches your current needs:
    - New to RNA design? Start with [**RNA Design**](rna-design.md)
@@ -81,9 +81,9 @@ Each tutorial follows a consistent structure:
 
 ## Need Help?
 
-- 📖 Check our [API Reference](../api/overview.md) for detailed function documentation
-- 🤝 See our [Contributing Guidelines](../contributing/guidelines.md) to help improve the tutorials
-- 🐛 Report issues on our [GitHub repository](https://github.com/COLA-Laboratory/OmniGenBench)
+- :book: Check our [API Reference](../api/overview.md) for detailed function documentation
+- :handshake: See our [Contributing Guidelines](../contributing/guidelines.md) to help improve the tutorials
+- :bug: Report issues on our [GitHub repository](https://github.com/COLA-Laboratory/OmniGenBench)
 
 ## What's Next?
 

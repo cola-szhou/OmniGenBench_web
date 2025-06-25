@@ -2,6 +2,8 @@
 hide:
   - navigation
   - toc
+  - footer
+  - feedback
 ---
 <body class="index">
 
@@ -13,10 +15,10 @@ hide:
                 OmniGenBench
             </p>
             <p class="hero-description">
-            A modular benchmarking platform for evaluating genomic foundation models (GFMs) across diverse tasks like RNA structure prediction, gene function classification, and multi-species generalization.
+            A modular benchmarking platform for evaluating genomic foundation models (gFMs) across diverse tasks like RNA structure prediction, gene function classification, and multi-species generalization.
             </p>
             <div class="hero-buttons">
-                <a href="content/getting-started/installation" class="md-button md-button--primary">Quick Start</a>
+                <a href="content/getting-started/basic-introduction" class="md-button md-button--primary">Quick Start</a>
                 <a href="#features" class="btn-outline-blue hero-learn-more"> Learn More</a>
             </div>
         </div>
@@ -30,10 +32,10 @@ hide:
 </div>
 
 <!-- Features Section -->
-<div id="features" style="background-color: #f0f0f0;">
+<div id="features" style="background-color: #f0f0f0; width: 100vw;">
     <div class="md-grid" style="height: 100%;">
         <div class="feature-header" style="padding-top: 100px;">
-            <p style="font-size: 2rem; font-weight: bold; text-align: center; margin-bottom: 10px; margin-top: 0px;">Everything you would expect</p>
+            <p style="font-size: 2rem; font-weight: bold; text-align: center; margin-bottom: 10px; margin-top: 0px; color: black;">Everything you would expect</p>
         </div>
         <div style="padding-bottom: 100px;">
             <div class="features-grid">
@@ -84,49 +86,145 @@ hide:
     </div>
 </div>
 
-<!--Tutorials Section-->
-<!-- <div class="container">
-    <div class="red-box" style="height: 100vh; width: 100%; background-color: red; position: relative;">
-        <h2>Red Box</h2>
-    </div>
-    <div class="blue-box" style="height: 100vh; width: 100%; background-color: blue; position: relative;">
-        <h2>Blue Box</h2>
-    </div>
-    <div class="green-box" style="height: 100vh; width: 100%; background-color: green; position: relative;">
-        <h2>Green Box</h2>
-    </div>
-    <div class="yellow-box" style="height: 100vh; width: 100%; background-color: yellow; position: relative;">
-        <h2>Yellow Box</h2>
-    </div>
-</div> -->
-
-<!--Meet the Team Section-->
-<div class="full-with-bg" style="height: 100vh; background-color: #f0f0f0; width: 100%;">
-    <div class="md-grid" style="background-color: black; height: 100%;">
-        <div class="md-content">
-            <h1>Welcome to OmniGenBench</h1>
-            <p>A comprehensive benchmark suite for evaluating generative models across multiple domains and tasks.</p>
+<!-- Card Section-->
+<div class="card-section" id="card-1">
+    <div class="md-grid" style="width: 100%; margin-top: 100px;">
+        <div style="display: flex; justify-content: center; align-items: center;">
+            <div class="text-block" id="text-block-1" style="flex: 1;">
+                <h2 style="font-size: 1.5rem; font-weight: bold;">30+ Genomic Foundation Models Supported</h2>
+                <p>OmniGenBench provides comprehensive support for over 30 state-of-the-art genomic foundation models, including DNABERT, Nucleotide Transformer, DNAGPT, and many more. Our platform enables seamless evaluation across diverse model architectures and training approaches.</p>
+                <p>From transformer-based models to graph neural networks, OmniGenBench supports models designed for DNA sequence analysis, RNA structure prediction, protein function prediction, and multi-species genomic understanding. Each model is carefully integrated with standardized evaluation protocols.</p>
+                <a href="content/getting-started/supported-models.md" style="color: #2962ff; text-decoration: none;">→ Learn more</a>
+            </div>
+            <div class="image-block" id="image-block-1" style="flex: 1; max-width: 50%; margin-left: 4rem; margin-right: 4rem; margin-top: 1rem; margin-bottom: 1rem;">
+                <a href="content/getting-started/supported-models.md">
+                    <img src="assets/images/models.svg" alt="DNA" style="max-width: 40hw, align-self: center; border-radius: 8px; box-shadow: 0 20px 25px rgba(0, 0, 0, 0.15);">
+                </a>
+            </div>
         </div>
     </div>
 </div>
 
+<div class="card-section" id="card-2">
+    <div class="md-grid" style="height: 100%;">
+        <div style="display: flex; justify-content: center; align-items: center;">
+            <div class="image-block" id="image-block-2" style="flex: 1; max-width: 50%; margin-left: 4rem; margin-right: 4rem; margin-top: 1rem; margin-bottom: 1rem;">
+                <a href="content/getting-started/supported-models.md">
+                    <img src="assets/images/models.svg" alt="DNA" style="max-width: 40hw, align-self: center; border-radius: 8px; box-shadow: 0 20px 25px rgba(0, 0, 0, 0.15);">
+                </a>
+            </div>
+            <div class="text-block" id="text-block-2" style="flex: 1;">
+                <h2 style="font-size: 1.5rem; font-weight: bold;">5 Curated Benchmarks Supported</h2>
+                <p>OmniGenBench features five carefully curated benchmarks covering the most important genomic tasks: DNA sequence classification, RNA structure prediction, protein function annotation, regulatory element identification, and cross-species sequence analysis.</p>
+                <p>Each benchmark includes standardized datasets, evaluation metrics, and baseline results, ensuring fair and reproducible comparisons across different genomic foundation models. Our benchmarks are designed to test both general genomic understanding and task-specific capabilities.</p>
+                <a href="content/benchmarks/overview.md" style="color: #2962ff; text-decoration: none;">→ Learn more</a>
+            </div>
+            
+        </div>
+    </div>
+</div>
+
+<div class="card-section" id="card-3">
+    <div class="md-grid" style="height: 100%;">
+        <div style="display: flex; justify-content: center; align-items: center;">
+            <div class="text-block" id="text-block-3" style="flex: 1;">
+                <h2 style="font-size: 1.5rem; font-weight: bold;">Rich Explanation Methods</h2>
+                <p>OmniGenBench provides comprehensive interpretability tools including attention visualization, saliency mapping, feature attribution, and sequence motif discovery. These methods help researchers understand how genomic foundation models make predictions and identify important biological patterns.</p>
+                <p>Our explanation framework supports multiple visualization techniques, from heatmaps showing attention patterns to interactive sequence browsers that highlight key genomic regions. This enables deeper insights into model behavior and biological relevance of predictions.</p>
+                <a href="content/interpretability/overview.md" style="color: #2962ff; text-decoration: none;">→ Learn more</a>
+            </div>
+            <div class="image-block" id="image-block-3" style="flex: 1; max-width: 50%; margin-left: 4rem; margin-right: 4rem; margin-top: 1rem; margin-bottom: 1rem;">
+                <a href="content/getting-started/supported-models.md">
+                    <img src="assets/images/models.svg" alt="DNA" style="max-width: 40hw, align-self: center; border-radius: 8px; box-shadow: 0 20px 25px rgba(0, 0, 0, 0.15);">
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card-section" id="card-4">
+    <div class="md-grid" style="height: 100%; margin-bottom: 50px;">
+        <div style="display: flex; justify-content: center; align-items: center;">
+            <div class="image-block" id="image-block-4" style="flex: 1; max-width: 50%; margin-left: 4rem; margin-right: 4rem; margin-top: 1rem; margin-bottom: 1rem;">
+                <a href="content/getting-started/supported-models.md">
+                    <img src="assets/images/models.svg" alt="DNA" style="max-width: 40hw, align-self: center; border-radius: 8px; box-shadow: 0 20px 25px rgba(0, 0, 0, 0.15);">
+                </a>
+            </div>
+            <div class="text-block" id="text-block-4" style="flex: 1;">
+                <h2 style="font-size: 1.5rem; font-weight: bold;">Faster Training with LoRA</h2>
+                <p>OmniGenBench integrates Low-Rank Adaptation (LoRA) techniques to enable efficient fine-tuning of large genomic foundation models. This approach reduces computational requirements by up to 90% while maintaining model performance, making genomic AI accessible to more researchers.</p>
+                <p>Our LoRA implementation supports various adaptation strategies, from task-specific fine-tuning to multi-task learning. This enables rapid experimentation and deployment of genomic models across different biological applications without the need for full model retraining.</p>
+                <a href="content/training/lora-guide.md" style="color: #2962ff; text-decoration: none;">→ Learn more</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Team Section -->
+<div class="Team-section" style="background-color: #f0f0f0;">
+  <div class="md-grid" style="padding-top: 10px;">
+    <div class="team-header" style="text-align: center; margin-bottom: 40px;">
+      <h2 style="font-size: 2rem; font-weight: bold;">Meet the Team</h2>
+      <p style="font-size: 1.1rem; color: #555;">The minds behind OmniGenBench</p>
+    </div>
+    <div class="team-grid">
+      <figure class="team-figure">
+        <img src="assets/team/male.png" alt="Ke Li">
+        <figcaption class="team-overlay">
+          Ke Li<br>
+          <span style="font-size:1rem; font-weight:normal;">Project Lead</span>
+        </figcaption>
+      </figure>
+      <figure class="team-figure">
+        <img src="assets/team/male.png" alt="Bob Lee">
+        <figcaption class="team-overlay">
+          Bob Lee<br>
+          <span style="font-size:1rem; font-weight:normal;">Lead Engineer</span>
+        </figcaption>
+      </figure>
+      <figure class="team-figure">
+        <img src="assets/team/female.png" alt="Carol Smith">
+        <figcaption class="team-overlay">
+          Carol Smith<br>
+          <span style="font-size:1rem; font-weight:normal;">Data Scientist</span>
+        </figcaption>
+      </figure>
+      <figure class="team-figure">
+        <img src="assets/team/male.png" alt="Carol Smith">
+        <figcaption class="team-overlay">
+          Carol Smith<br>
+          <span style="font-size:1rem; font-weight:normal;">Data Scientist</span>
+        </figcaption>
+      </figure>
+      <figure class="team-figure">
+        <img src="assets/team/female.png" alt="Carol Smith">
+        <figcaption class="team-overlay">
+          Carol Smith<br>
+          <span style="font-size:1rem; font-weight:normal;">Data Scientist</span>
+        </figcaption>
+      </figure>
+    </div>
+  </div>
+</div>
+
+<!-- Partners Section -->
+<div class="partners-section" style="background-color: #f0f0f0;">
+  <div class="md-grid" style="padding-top: 20px; padding-bottom: 100px; width: 100%;">
+    <div class="partners-header" style="text-align: center; margin-bottom: 40px;">
+      <h2 style="font-size: 2rem; font-weight: bold;">Our Partners</h2>
+    </div>
+    <div class="partners-grid" style="display: flex; flex-direction: row; justify-content: center; gap: 40px;">
+      <div class="partner-item">
+        <img src="assets/partners/jic-logo.svg" alt="JIC">
+      </div>
+      <div class="partner-item">
+        <img src="assets/partners/uoe-logo.svg" alt="UoE">
+      </div>
+      <div class="partner-item">
+        <img src="assets/partners/jic-logo.svg" alt="JIC">
+      </div>
+    </div>
+  </div>
+</div>
+
 </body>
-
-<!-- <div class="content-wrapper">
-    <h2 class="animate-heading">Welcome to OmniGenBench</h2>
-    <p class="animate-text">A comprehensive benchmark suite for evaluating generative models across multiple domains and tasks.</p>
-
-    <h2 class="animate-heading">Key Features</h2>
-    <ul class="feature-list">
-        <li>Multi-domain evaluation</li>
-        <li>Comprehensive metrics</li>
-        <li>Easy-to-use interface</li>
-        <li>Extensible framework</li>
-    </ul>
-
-    <h2 class="animate-heading">Getting Started</h2>
-    <p class="animate-text">Check out our <a href="getting-started/installation.md">Installation Guide</a> to get started with OmniGenBench.</p>
-
-    <h2 class="animate-heading">Documentation</h2>
-    <p class="animate-text">Explore our <a href="tutorial/rna-design.md">tutorials</a> and <a href="api/overview.md">API reference</a> to learn more about using OmniGenBench.</p>
-</div> -->

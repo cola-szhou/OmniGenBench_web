@@ -16,21 +16,23 @@ body.index .md-content h1:first-child {
     padding: 0 !important;
 }
 
+
 body.index .hero-container {
-    height: 100% !important;
-    width: 100% !important;
+    height: 100vh !important;
+    width: 100vw !important;
+    background-image: url('../assets/images/hero-image.jpeg');
+    background-size: cover;
+    background-position: bottom center;
+    background-repeat: no-repeat;
     position: relative;
-    margin-top: 0 !important;
-    padding-top: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
     overflow: hidden !important;
     align-items: center;
-    justify-content: center;
-}
-
-body.index .hero-image{
-    height: 100% !important;
-    width: 100% !important;
-    object-fit: cover;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: center;
 }
 
 body.index .md-content__inner::before {
@@ -41,26 +43,20 @@ body.index .md-content__inner::before {
 }
 
 body.index .hero-caption {
-    display: flex;
-    flex-direction: column;
-    justify-content: left;
-    position: absolute;
-    bottom: 20%;
-    left: 5%;
-    transform: none;
-    background-color: rgba(0, 0, 0, 0.4);
-    color: white;
-    padding: 2rem;
-    border-radius: 8px;
-    font-size: 1rem;
-    font-weight: 500;
-    text-align: left;
-    z-index: 1000;
-    max-width: 60%;
-    max-height:50%;
-    width: auto;
-    height: auto;
-    min-width: 250px;
+    position: relative !important;
+    margin-left: 0 !important;
+    margin-bottom: -10vh !important;
+    max-width: 55% !important;
+    width: auto !important;
+    /* background-color: #a9b7c3 !important; */
+    background-color: rgba(169, 183, 195, 0.7) !important;
+    backdrop-filter: blur(10px) !important;
+    -webkit-backdrop-filter: blur(10px) !important;
+    border-radius: 12px !important;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1) !important;
+
+    height: auto !important;
+    padding: 2% !important;
 }
 
 /* Hero Caption Elements */
@@ -70,11 +66,14 @@ body.index .hero-title {
     text-align: left;
     margin-bottom: 10px;
     margin-top: 0px;
+    color: white;
 }
 
 body.index .hero-description {
     text-align: left;
     margin-bottom: 20px;
+    font-size: 1rem;
+    color: white;
 }
 
 body.index .hero-buttons {
@@ -90,14 +89,14 @@ body.index .hero-learn-more {
 
 /* Scroll Down Element */
 body.index .scroll-down {
-    position: absolute;
-    bottom: 10vh;
+    position: relative;
     left: 50%;
     transform: translateX(-50%);
     align-items: center;
     justify-content: center;
     display: flex;
     flex-direction: column;
+    margin-bottom: 5vh;
 }
 
 body.index .scroll-text {

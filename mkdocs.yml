@@ -3,6 +3,10 @@ site_description: A website for the OmniGenBench project
 
 theme:
   name: material
+  font:
+    # text: IBM Plex Sans
+    text: Inter
+    code: JetBrains Mono
   features:
     - navigation.tabs
     - navigation.prune
@@ -12,6 +16,8 @@ theme:
     - content.code.annotate
     - navigation.footer
     - content.tooltips
+  logo: assets/images/dna-2-svgrepo-com.svg
+  favicon: assets/images/dna-2-svgrepo-com (1).svg
 
 
   palette:
@@ -36,16 +42,19 @@ theme:
 nav:
   - Home: index.md
   - Getting Started:
+    - Basic Introduction: content/getting-started/basic-introduction.md
     - Installation: content/getting-started/installation.md
-    - Quick Start: content/getting-started/quick-start.md
+    - Command-Line Usage: content/getting-started/command-line-usage.md
+    - Python API Usage: content/getting-started/python-api-usage.md
+    - Supported Models: content/getting-started/supported-models.md
+    - Supported Benchmarks: content/getting-started/supported-benchmarks.md
   - Tutorials:
     - Overview: content/tutorial/overview.md
     - RNA Design: content/tutorial/rna-design.md
     - RNA Secondary Structure Prediction: content/tutorial/rna-secondary-structure-prediction.md
     - RNA Embedding: content/tutorial/RNA-embedding.md
     - RNA Augmentation: content/tutorial/rna-augmentation.md
-  - API Reference:
-    - Overview: content/api/overview.md
+  - API Reference: https://your-api-docs-url.com
   - Contributing:
     - Guidelines: content/contributing/guidelines.md
     - Development: content/contributing/development.md
@@ -76,6 +85,9 @@ markdown_extensions:
   - pymdownx.emoji:
       emoji_index: !!python/name:material.extensions.emoji.twemoji
       emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - tables
+  - admonition
+  - pymdownx.details
 
 extra:
   analytics: 
@@ -102,6 +114,8 @@ plugins:
       timezone: UTC
       locale: en
       enable_creation_date: true
+      exclude:
+        - index.md
 
 copyright: |
     © 2025 OmniGenBench Developers. Licensed under the 
