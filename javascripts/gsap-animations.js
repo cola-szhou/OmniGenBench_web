@@ -1,5 +1,5 @@
 // Wait for the document to be fully loaded
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     // Import GSAP
     gsap.registerPlugin(ScrollTrigger);
 
@@ -23,18 +23,18 @@ document.addEventListener('DOMContentLoaded', function() {
     gsap.fromTo(".hero-container",
         { opacity: 1 },
         {
-          opacity: 0,
-          ease: "none",
-          scrollTrigger: {
-            trigger: ".hero-container",
-            start: "top top",
-            end: "bottom top",
-            scrub: true,
-            toggleActions: "play none none reverse",
-          }
+            opacity: 0,
+            ease: "none",
+            scrollTrigger: {
+                trigger: ".hero-container",
+                start: "top top",
+                end: "bottom top",
+                scrub: true,
+                toggleActions: "play none none reverse",
+            }
         }
     );
-    
+
 
     // Animate headings with scroll trigger
     // gsap.utils.toArray("h2").forEach(heading => {
@@ -96,29 +96,29 @@ document.addEventListener('DOMContentLoaded', function() {
         ease: "power2.out"
     });
 
-    
+
 
     const tl2 = gsap.timeline({ defaults: { ease: "power2.out", duration: 1 } });
 
     tl2.from(".hero-title", {
-      y: 50,
-      opacity: 0
+        y: 50,
+        opacity: 0
     })
-    .from(".hero-description", {
-      y: 50,
-      opacity: 0
-    }, "-=0.5")
-    .from(".hero-buttons", {
-      y: 30,
-      opacity: 0
-    }, "-=0.5");
+        .from(".hero-description", {
+            y: 50,
+            opacity: 0
+        }, "-=0.5")
+        .from(".hero-buttons", {
+            y: 30,
+            opacity: 0
+        }, "-=0.5");
 
     // Card section animations - trigger based on card-section
     gsap.utils.toArray(".card-section").forEach((cardSection, index) => {
         // Get the text-block and image-block within this card section
         const textBlock = cardSection.querySelector(".text-block");
         const imageBlock = cardSection.querySelector(".image-block");
-        
+
         // Enhanced text-block animation
         if (textBlock) {
             // Initial state - set text block to be invisible and rotated
@@ -129,7 +129,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 scale: 0.8,
                 filter: "blur(10px)"
             });
-            
+
             gsap.to(textBlock, {
                 scrollTrigger: {
                     trigger: cardSection,
@@ -145,7 +145,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 filter: "blur(0px)",
                 ease: "power3.out"
             });
-            
+
             // Animate text content elements with stagger
             const textElements = textBlock.querySelectorAll("h2, p, a");
             gsap.from(textElements, {
@@ -162,7 +162,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 ease: "power2.out",
                 delay: 0.3
             });
-            
+
             // Add hover effects to "Learn more" links
             const learnMoreLinks = textBlock.querySelectorAll("a");
             learnMoreLinks.forEach(link => {
@@ -178,7 +178,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         ease: "power2.out"
                     });
                 });
-                
+
                 link.addEventListener('mouseleave', () => {
                     gsap.to(link, {
                         scale: 1,
@@ -193,7 +193,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 });
             });
         }
-        
+
         // Enhanced image-block animation
         if (imageBlock) {
             // Initial state - set image block to be invisible and rotated
@@ -204,7 +204,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 scale: 0.8,
                 filter: "blur(10px)"
             });
-            
+
             gsap.to(imageBlock, {
                 scrollTrigger: {
                     trigger: cardSection,
@@ -221,7 +221,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 ease: "power3.out",
                 delay: 0.2
             });
-            
+
             // Enhanced hover effect for image-block
             imageBlock.addEventListener('mouseenter', () => {
                 gsap.to(imageBlock, {
@@ -230,7 +230,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     duration: 0.4,
                     ease: "power2.out"
                 });
-                
+
                 // Add subtle glow effect
                 // gsap.to(imageBlock, {
                 //     boxShadow: "0 25px 35px rgba(0, 0, 0, 0.2)",
@@ -238,7 +238,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 //     ease: "power2.out"
                 // });
             });
-            
+
             imageBlock.addEventListener('mouseleave', () => {
                 gsap.to(imageBlock, {
                     scale: 1,
@@ -246,7 +246,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     duration: 0.4,
                     ease: "power2.out"
                 });
-                
+
                 // Remove glow effect
                 // gsap.to(imageBlock, {
                 //     boxShadow: "0 20px 25px rgba(0, 0, 0, 0.15)",
@@ -254,7 +254,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 //     ease: "power2.out"
                 // });
             });
-            
+
             // Add click animation
             imageBlock.addEventListener('click', () => {
                 gsap.to(imageBlock, {
@@ -301,8 +301,9 @@ document.addEventListener('DOMContentLoaded', function() {
     gsap.from(".partners-header", {
         scrollTrigger: {
             trigger: ".partners-section",
-            start: "top 60%",
-            toggleActions: "play none none none"
+            start: "top 70%",
+            toggleActions: "play none none none",
+            // markers: true
         },
         y: 40,
         opacity: 0,
@@ -314,8 +315,9 @@ document.addEventListener('DOMContentLoaded', function() {
     gsap.from(".partner-item", {
         scrollTrigger: {
             trigger: ".partners-section",
-            start: "top 60%",
-            toggleActions: "play none none none"
+            start: "top 70%",
+            toggleActions: "play none none none",
+            // markers: true
         },
         y: 60,
         opacity: 0,
