@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Genomic Foundation Model Evolution</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Roboto Mono', monospace;
+            font-size: 20px; /* 关键：调大整体字体 */
+            margin: 0;
+            padding: 20px;
+            background: #f4f7f9;
+            color: #333;
+        }
+        * {
+            font-family: 'Roboto Mono', monospace !important;
+        }
+        .container {
+            max-width: 1600px; /* Increased max-width for better layout with larger fonts */
+            margin: 0 auto;
+            background: #ffffff;
+            border-radius: 16px;
+            padding: 40px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+        }
+
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 40px;
+            font-size: 2.8em; /* Increased */
+            font-weight: 600;
+        }
+
+        .controls, .legend {
+            display: flex;
+            justify-content: center;
+            gap: 20px; /* Increased */
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 10px; /* Increased */
+        }
+
+        .legend-circle {
+            width: 18px; /* Increased */
+            height: 18px; /* Increased */
+            border-radius: 50%;
+        }
+
+        .legend-text {
+            font-size: 20px; /* Increased */
+            font-weight: 500;
+            color: #34495e;
+        }
+
+        .control-btn {
+            background-color: #e9ecef;
+            color: #495057;
+            border: 1px solid #dee2e6;
+            padding: 12px 24px; /* Increased */
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 24px; /* Increased */
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+        .control-btn:hover {
+            background-color: #ced4da;
+            border-color: #adb5bd;
+        }
+
+        .control-btn.active {
+            color: #fff;
+            border-color: #34495e;
+            background-color: #34495e;
+            box-shadow: 0 4px 12px rgba(52, 73, 94, 0.2);
+        }
+
+        .chart-container {
+            position: relative;
+        }
+
+        .bubble {
+            stroke: #fff;
+            stroke-width: 1.5;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .bubble:hover {
+            stroke-width: 3;
+            filter: brightness(1.1);
+        }
+
+        .tooltip {
+            position: absolute;
+            background: rgba(44, 62, 80, 0.95);
+            color: white;
+            padding: 12px 18px; /* Increased */
+            border-radius: 8px;
+            font-size: 24px; /* Increased */
+            line-height: 1.6;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+            z-index: 10;
+        }
+
+        /* Added styles for axis text */
+        .axis text {
+            font-size: 20px; /* Increased */
+        }
+
+        .axis-label {
+            font-size: 24px; /* Increased */
+            font-weight: 500;
+            fill: #34495e;
+        }
+
+        .model-label {
+            font-size: 24px;
+            font-weight: 500;
+            text-anchor: middle;
+            fill: #34495e;
+            pointer-events: all;   /* 启用指针事件以支持拖拽 */
+            cursor: move;          /* 显示可拖拽光标 */
+        }
+
+        .zoom-controls {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            display: flex;
+            gap: 5px;
+        }
+
+        .zoom-btn {
+            width: 36px; /* Increased */
+            height: 36px; /* Increased */
+            background: rgba(255, 255, 255, 0.8);
+            border: 1px solid #ccc;
+            color: #333;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 24px; /* Increased */
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+        .zoom-btn:hover {
+            background: #fff;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>Evolution of Genomic Foundation Models 🧬</h1>
+
+    <div class="controls"></div>
+    <div class="legend"></div>
+
+    <div class="chart-container">
+        <div class="zoom-controls">
+            <button class="zoom-btn" id="zoom-in">+</button>
+            <button class="zoom-btn" id="zoom-out">–</button>
+            <button class="zoom-btn" id="zoom-reset">⌂</button>
+        </div>
+        <svg id="bubbleChart"></svg>
+    </div>
+
+    <div class="tooltip" id="tooltip"></div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+
+        // --- 1. DATA SETUP ---
+const modelToModalityMap = new Map([
+  ["RNA-BERT", "RNA"],
+  ["5UTR-FM", "UTR"],
+  ["UTRlm-TE-EL", "UTR"],
+  ["UTRlm-MRL", "UTR"],
+  ["Caduceus", "DNA"],          // arXiv:2403.03234
+  ["SpliceBERT", "DNA"],
+  ["PlantRNA-FM", "RNA"],       // Nat. Mach. Intell. 2024
+  ["HyenaDNA-Large", "DNA"],
+  ["CALM", "DNA"],
+  ["3UTRBERT", "UTR"],
+  // ["UTRbert", "UTR"],
+  ["ErnieRNA", "RNA"],
+  ["RNAErnie", "RNA"],
+  ["UTRbert-4mer", "UTR"],
+  ["UTRbert-5mer", "UTR"],
+  ["NT-V2-100M", "DNA"],
+  ["NT-2.5B", "DNA"],
+  ["NT-500M", "DNA"],
+  ["NT-100M", "DNA"],
+  ["RNA-MSM", "RNA"],
+  // ["UTRbert-6mer", "UTR"],
+  ["DNA-FM", "DNA"],
+  ["DNABERT", "DNA"],
+  ['DNABERT-2', "DNA"],
+  ["OmniGenome", "RNA"],
+  ["MP-RNA", "RNA"],
+  ["RINA", "RNA"],
+  ["RINAlmo", "RNA"],
+  ["Agro-NT-1B", "DNA"],
+  ["Evo-2", "Multi-modal"],
+  ["Evo-1", "Multi-modal"],
+  ["GenomeOcean", "DNA"],
+  ["AIDO.DNA", "DNA"],
+  ["Generanno", "DNA"],
+  ["BioFM", "DNA"],
+  ["scLong", "RNA"],
+  ["UKBioBERT", "DNA"],
+  ["Gene42-B", "DNA"],
+  ["Gene42-L", "DNA"],
+  ["GENERator", "DNA"]
+]);
+
+
+/* -------- 2. 原始数据表 -------- */
+const rawData = [
+  { model: "RNA-BERT",      params: 0.5,   date: "22 February 2022",  source: "bioRxiv" },
+  { model: "5UTR-FM",       params: 1.23,  date: "14 Oct 2023", source: "NMI" },
+  { model: "Caduceus",      params: 1.9,   date: "05 March 2024",   source: "arXiv" },
+  { model: "SpliceBERT",    params: 19,    date: "11 April 2024",source: "bioRxiv" },
+  { model: "PlantRNA-FM",   params: 35,    date: "09 December 2024",source: "Nature Machine Intelligence" },
+  { model: "HyenaDNA-Large",params: 47,    date: "15 November 2023",    source: "arXiv" },
+  { model: "CALM",          params: 85.7,  date: "19 December 2022.",source: "bioRxiv" },
+  { model: "3UTRBERT",      params: 86,    date: "12 September 2023",     source: "bioRxiv" },
+  // { model: "UTRbert",       params: 86.3,  date: "19 May 2022",     source: "bioRxiv" },
+  { model: "ErnieRNA",      params: 86.7,  date: "17 Mar 2024",    source: "bioRxiv" },
+  { model: "RNAErnie",      params: 86.7,  date: "13 May 2024",    source: "bioRxiv" },
+  { model: "NT-V2-100M",    params: 100,   date: "28 November 2024", source: "bioRxiv" },
+    { model: "NT-2.5B",       params: 2500, date: "28 November 2024", source: "bioRxiv" },
+    { model: "NT-500M",       params: 500,   date: "28 November 2024", source: "bioRxiv" },
+    // { model: "NT-100M",       params: 100,   date: "28 November 2024", source: "bioRxiv" },
+  { model: "RNA-MSM",       params: 96,    date: "11 January 2024",   source: "bioRxiv" },
+  { model: "DNABERT",       params: 89,    date: "23 June 2021",    source: "Bioinformatics" },
+  { model: "DNABERT-2",     params: 117,    date: "11 Apr 2024",  source: "bioRxiv" },
+  { model: "OmniGenome",    params: 186,   date: "15 July 2024",    source: "arXiv" },
+  { model: "MP-RNA",        params: 186,   date: "12 November 2024",source: "Findings of EMNLP" },
+  { model: "RINA",          params: 186,   date: "09 April 2024",   source: "bioRxiv" },
+  { model: "RINAlmo",       params: 651,   date: "09 April 2024",   source: "bioRxiv" },
+  { model: "Agro-NT-1B",    params: 985,   date: "27 Oct 2023",   source: "bioRxiv" },
+  { model: "Evo-2",         params: 40000, date: "19 February 2025",source: "bioRxiv" },
+  { model: "GenomeOcean",   params: 4000,  date: "30 January 2025", source: "bioRxiv" },
+  { model: "AIDO.DNA",      params: 7000,  date: "01 December 2024",source: "bioRxiv" },
+  { model: "BioFM",         params: 265,   date: "1 April 2025",   source: "bioRxiv" },
+  { model: "scLong",        params: 1000,  date: "11 November 2024",source: "bioRxiv" },
+  { model: "UKBioBERT",     params: 110,   date: "2 Mar 2025",source: "bioRxiv" },
+  // { model: "Gene42-B",      params: 500,   date: "20 March 2025",   source: "arXiv" },
+  { model: "Gene42-L",      params: 1100,  date: "20 March 2025",   source: "arXiv" },
+  { model: "GENERator",     params: 1200,  date: "11 February 2025",source: "arXiv" },
+  { model: "Evo-1",         params: 7000,  date: "27 February 2024",source: "Together AI blog" }
+];
+
+        const data = rawData.map(d => ({
+            ...d,
+            date: new Date(d.date),
+            modality: modelToModalityMap.get(d.model) || 'Other'
+        }));
+
+        // --- 2. CONFIGURATION & SCALES ---
+        const colorMap = {
+            "RNA": "#e74c3c", "DNA": "#3498db", "Multi-modal": "#2ecc71",
+            "UTR": "#f1c40f",
+        };
+
+        const margin = {top: 20, right: 20, bottom: 70, left: 90};
+        const width = 1400 - margin.left - margin.right;
+        const height = 700 - margin.top - margin.bottom;
+
+        const svg = d3.select("#bubbleChart")
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom);
+
+        const g = svg.append("g")
+            .attr("transform", `translate(${margin.left},${margin.top})`);
+
+        const xScale = d3.scaleTime()
+            .domain(d3.extent(data, d => d.date))
+            .range([0, width]).nice();
+
+        const yScale = d3.scaleLog()
+            .domain([0.4, 110000]) // Manually set max value to 100,000
+            .range([height, 0]).nice();
+        const sizeScale = d3.scaleSqrt()
+            .domain([0, d3.max(data, d => d.params)])
+            .range([5, 65]);
+
+        // --- 3. DYNAMICALLY CREATE LEGEND & CONTROLS ---
+        const modalities = ["Show All", ...Object.keys(colorMap)];
+
+        d3.select('.controls').selectAll('button')
+            .data(modalities).enter()
+            .append('button')
+            .attr('class', 'control-btn')
+            .classed('active', d => d === 'Show All')
+            .text(d => d === 'Multi-modal' ? 'Multi' : d)
+            .on('click', (event, d) => filterByModality(d));
+
+        const legend = d3.select('.legend').selectAll('.legend-item')
+            .data(Object.entries(colorMap)).enter()
+            .append('div').attr('class', 'legend-item');
+
+        legend.append('div').attr('class', 'legend-circle')
+            .style('background-color', d => d[1]);
+        legend.append('span').attr('class', 'legend-text')
+            .text(d => d[0] === 'Multi-modal' ? 'Multi' : d[0]);
+
+// --- 4. PRE‑CALCULATE LABEL DISPLAY LOGIC ---
+const labelDisplayInfo = new Map();
+const finalLabelPositions = new Map();
+
+const yAxisBinSize = 1;
+const paramGroups = d3.group(data, d => Math.round(yScale(d.params) / yAxisBinSize));
+
+paramGroups.forEach((group) => {
+  group.sort((a, b) => a.date - b.date);
+  const representative = group[0];
+  labelDisplayInfo.set(representative.model, { show: true, intendedPos: 'outside' });
+
+  for (let i = 1; i < group.length; i++) {
+    labelDisplayInfo.set(group[i].model, { show: true });
+  }
+});
+
+        // --- 5. DRAW AXES & GRID ---
+        const yAxisFormatter = d => {
+            const exponent = Math.log10(d);
+            // Use a small epsilon for floating point comparison to check for integer exponents
+            if (Math.abs(exponent - Math.round(exponent)) < 1e-9) {
+                return `10^${Math.round(exponent)}`;
+            }
+            // For a log scale, d3 might pass non-power-of-10 ticks.
+            // Return empty string for those to avoid clutter, only showing major power-of-10 lines.
+            return "";
+        };
+
+        const xAxis = g.append("g")
+            .attr("class", "axis")
+            .attr("transform", `translate(0,${height})`)
+            .call(d3.axisBottom(xScale));
+
+        const yAxis = g.append("g")
+            .attr("class", "axis")
+            .call(d3.axisLeft(yScale)
+                .ticks(10, d3.format(",.1s")) // Request more ticks, but formatter will filter
+                .tickFormat(yAxisFormatter)
+            );
+
+        g.append("text")
+            .attr("class", "axis-label")
+            .attr("transform", `translate(${width / 2},${height + 55})`)
+            .style("text-anchor", "middle").text("Release Date");
+
+        g.append("text")
+            .attr("class", "axis-label")
+            .attr("transform", "rotate(-90)")
+            .attr("y", -margin.left + 25)
+            .attr("x", -height / 2)
+            .style("text-anchor", "middle").text("Parameters (Millions)");
+
+
+        // --- 6. DRAW BUBBLES & LABELS ---
+        const tooltip = d3.select("#tooltip");
+
+        const bubbles = g.selectAll(".bubble")
+            .data(data, d => d.model)
+            .enter().append("circle")
+            .attr("class", "bubble")
+            .attr("cx", d => xScale(d.date))
+            .attr("cy", d => yScale(d.params))
+            .attr("r", 0)
+            .attr("fill", d => colorMap[d.modality])
+            .on("mouseover", (event, d) => {
+                tooltip.style("opacity", 1)
+                    .html(`<strong>${d.model}</strong><br/>
+                                  Parameters: ${d.params.toLocaleString()} M<br/>
+                                  Modality: ${d.modality}<br/>
+                                  Date: ${d.date.toLocaleDateString()}`);
+            })
+            .on("mousemove", (event) => {
+                tooltip.style("left", (event.pageX + 15) + "px")
+                    .style("top", (event.pageY - 10) + "px");
+            })
+            .on("mouseout", () => tooltip.style("opacity", 0));
+
+        // 添加连接线（line）
+        const lines = g.selectAll(".label-line")
+            .data(data.filter(d => {
+                const info = labelDisplayInfo.get(d.model);
+                return info && info.show;
+            }), d => d.model)
+            .enter().append("line")
+            .attr("class", "label-line")
+            .attr("stroke", "#999")
+            .attr("stroke-width", 1)
+            .attr("x1", d => xScale(d.date))
+            .attr("y1", d => yScale(d.params))
+            .attr("x2", d => xScale(d.date))
+            .attr("y2", d => yScale(d.params));
+
+        const labels = g.selectAll(".model-label")
+            .data(data, d => d.model)
+            .enter().append("text")
+            .attr("class", "model-label")
+            .attr("x", d => xScale(d.date))
+            .attr("y", d => yScale(d.params))
+            .text(d => d.model);
+
+        // 定义拖拽行为
+        const labelDrag = d3.drag()
+            .on("start", function (event, d) {
+                d3.select(this).raise().classed("dragging", true);
+            })
+            .on("drag", function (event, d) {
+                // 记录新的坐标
+                d.customX = event.x;
+                d.customY = event.y;
+
+                // 更新标签位置
+                d3.select(this)
+                    .attr("x", d.customX)
+                    .attr("y", d.customY);
+
+                // 更新对应的连接线
+                lines.filter(l => l.model === d.model)
+                     .attr("x2", d.customX)
+                     .attr("y2", d.customY);
+            })
+            .on("end", function () {
+                d3.select(this).classed("dragging", false);
+            });
+
+        labels.each(function (d) {
+                const node = d3.select(this);
+                const info = labelDisplayInfo.get(d.model);
+
+                if (!info || !info.show) {
+                    node.style("display", "none");
+                    return;
+                }
+
+                let finalPos = info.intendedPos;
+
+                if (info.intendedPos === 'inside') {
+                    const textWidth = this.getBBox().width;
+                    const bubbleDiameter = sizeScale(d.params) * 2;
+                    if (textWidth > bubbleDiameter * 0.9) {
+                        finalPos = 'outside'; // Fallback to outside if it doesn't fit
+                    }
+                }
+
+                finalLabelPositions.set(d.model, finalPos);
+
+                let x = xScale(d.date);
+                let y = yScale(d.params);
+                if (finalPos === 'inside') {
+                    node.attr("dy", "0.35em")
+                        .style("fill", "#fff")
+                        .style("font-weight", "bold");
+                } else {
+                    y = y - sizeScale(d.params) - 5;
+                    node.attr("dy", null)
+                        .style("fill", "#34495e")
+                        .style("font-weight", "500");
+                }
+
+                // 设置初始位置
+                d.customX = x;
+                d.customY = y;
+
+                node.attr("x", d.customX).attr("y", d.customY);
+
+                // 更新连线终点
+                lines.filter(l => l.model === d.model)
+                     .attr("x2", d.customX)
+                     .attr("y2", d.customY);
+
+                // 应用拖拽行为
+                node.call(labelDrag);
+            });
+
+        bubbles.transition()
+            .duration(800)
+            .delay((d, i) => i * 10)
+            .attr("r", d => sizeScale(d.params))
+            .ease(d3.easeElastic.period(0.6));
+
+        // --- 7. INTERACTIVITY (ZOOM & FILTER) ---
+        const zoom = d3.zoom()
+            .scaleExtent([0.5, 20])
+            .extent([[0, 0], [width, height]])
+            .on("zoom", zoomed);
+
+        function zoomed(event) {
+            const newXScale = event.transform.rescaleX(xScale);
+            const newYScale = event.transform.rescaleY(yScale);
+
+            xAxis.call(d3.axisBottom(newXScale));
+            yAxis.call(d3.axisLeft(newYScale)
+                .ticks(10, d3.format(",.1s"))
+                .tickFormat(yAxisFormatter)
+            );
+
+            bubbles.attr("cx", d => newXScale(d.date))
+                .attr("cy", d => newYScale(d.params));
+
+            // 更新连线起点
+            lines.attr("x1", d => newXScale(d.date))
+                 .attr("y1", d => newYScale(d.params));
+
+            labels.each(function(d) {
+                const node = d3.select(this);
+
+                // 如果有自定义位置，应用变换
+                if (d.customX !== undefined && d.customY !== undefined) {
+                    // 将自定义位置也应用相同的变换
+                    const transformedX = event.transform.applyX(d.customX);
+                    const transformedY = event.transform.applyY(d.customY);
+
+                    node.attr("x", transformedX)
+                        .attr("y", transformedY);
+
+                    // 更新对应连线的终点
+                    lines.filter(l => l.model === d.model)
+                         .attr("x2", transformedX)
+                         .attr("y2", transformedY);
+                } else {
+                    // 没有自定义位置时使用默认逻辑
+                    const finalPos = finalLabelPositions.get(d.model);
+                    let x = newXScale(d.date);
+                    let y = newYScale(d.params);
+
+                    if (finalPos === 'outside') {
+                        y = y - sizeScale(d.params) * Math.sqrt(event.transform.k) - 5;
+                    }
+
+                    node.attr("x", x).attr("y", y);
+
+                    if (finalPos === 'inside') {
+                        node.attr("dy", "0.35em");
+                    } else {
+                        node.attr("dy", null);
+                    }
+
+                    // 更新对应连线的终点
+                    lines.filter(l => l.model === d.model)
+                         .attr("x2", x)
+                         .attr("y2", y);
+                }
+            });
+        }
+
+        svg.call(zoom);
+
+        d3.select("#zoom-in").on("click", () => svg.transition().call(zoom.scaleBy, 1.3));
+        d3.select("#zoom-out").on("click", () => svg.transition().call(zoom.scaleBy, 1 / 1.3));
+        d3.select("#zoom-reset").on("click", () => svg.transition().call(zoom.transform, d3.zoomIdentity));
+
+        function filterByModality(modality) {
+            const isShowAll = modality === "Show All";
+
+            bubbles.transition().duration(300)
+                .style("opacity", d => isShowAll || d.modality === modality ? 1 : 0.1)
+                .attr("r", d => isShowAll || d.modality === modality ? sizeScale(d.params) : sizeScale(d.params) / 2);
+
+            labels.transition().duration(300)
+                .style("opacity", d => {
+                    if (!isShowAll && d.modality !== modality) {
+                        return 0;
+                    }
+                    const info = labelDisplayInfo.get(d.model);
+                    return (info && info.show) ? 1 : 0;
+                });
+
+            // 同时控制连线的显示/隐藏
+            lines.transition().duration(300)
+                .style("opacity", d => {
+                    if (!isShowAll && d.modality !== modality) {
+                        return 0;
+                    }
+                    const info = labelDisplayInfo.get(d.model);
+                    return (info && info.show) ? 1 : 0;
+                });
+
+            d3.selectAll(".control-btn").classed("active", function (d) {
+                return d === modality;
+            });
+        }
+    });
+</script>
+</body>
+</html>

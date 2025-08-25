@@ -1046,49 +1046,30 @@
     </div>
 </div>
 
-<!-- Features Section -->
-<div id="features" style="background-color: #f0f0f0; width: 100vw;">
-    <div class="md-grid" style="height: 100%;">
-        <div class="feature-header" style="padding-top: 100px;">
-            <p style="font-size: 2rem; font-weight: bold; text-align: center; margin-bottom: 10px; margin-top: 0px; color: black;">Everything you would expect</p>
-        </div>
-        <div style="padding-bottom: 100px;">
-            <div class="features-grid">
-                <div class="feature-item">
-                    <img src="assets/images/dna-svgrepo-com.svg" alt="DNA" style="width: 50px; height: 50px;">
-                    <div class="feature-text">
-                    <h3>Omni-Genomic Applications</h3>
-                    <p>Build custom genomic applications with gFMs tailored to your data and task.</p>
-                    </div>
-                </div>
-                <div class="feature-item">
-                    <img src="assets/images/brain-svgrepo-com.svg" alt="Brain" style="width: 50px; height: 50px;">
-                    <div class="feature-text">
-                    <h3>Rapid Pipeline Deployment</h3>
-                    <p>Deploy genomic task pipelines in just a few lines of code.</p>
-                    </div>
-                </div>
-                <div class="feature-item">
-                    <img src="assets/images/settings-gear-svgrepo-com.svg" alt="Gear" style="width: 50px; height: 50px;">
-                    <div class="feature-text">
-                    <h3>Interpretable Model Predictions</h3>
-                    <p>Interpret model predictions on real-world genomic datasets.</p>
-                    </div>
-                </div>
-                <div class="feature-item">
-                    <img src="assets/images/rocket-launch-svgrepo-com.svg" alt="Rocket" style="width: 50px; height: 50px;">
-                    <div class="feature-text">
-                    <h3>Model Zoo & Data Hub</h3>
-                    <p>Explore an expanding model zoo and data hub for open evaluation and deployment.</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
+<!-- Bubble -->
+<iframe id="bubbleFrame" src="/javascripts/model_bubble.html"
+        width="100%" style="border:none; overflow:hidden;"></iframe>
+
+<iframe id="paretoFrame" src="/javascripts/pareto.html"
+        width="100%" style="border:none; overflow:hidden;"></iframe>
+
+<script>
+  function autoResize(id) {
+    const iframe = document.getElementById(id);
+    iframe.onload = () => {
+    //   iframe.style.height = iframe.contentWindow.document.documentElement.scrollHeight + 'px';
+        iframe.style.height = (iframe.contentWindow.document.body.scrollHeight) + 'px';
+
+
+    };
+  }
+
+  autoResize('bubbleFrame');
+  autoResize('paretoFrame');
+</script>
 
 <!-- Card Section-->
-<div class="card-section" id="card-1">
+<!-- <div class="card-section" id="card-1">
     <div class="md-grid" style="width: 100%; margin-top: 100px;">
         <div style="display: flex; justify-content: center; align-items: center;">
             <div class="text-block" id="text-block-1" style="flex: 1;">
@@ -1159,7 +1140,7 @@
             </div>
         </div>
     </div>
-</div>
+</div> -->
 
 <!-- Team Section -->
 <div class="Team-section" style="background-color: #f0f0f0;">

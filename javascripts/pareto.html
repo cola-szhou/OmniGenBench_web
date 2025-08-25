@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multi-Benchmark Model Efficiency Analysis</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono&display=swap" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap');
+        body {
+            font-family: 'Roboto Mono', monospace;
+            margin: 0;
+            /* padding: 30px; */
+            padding-bottom: 100px;
+            background-color: #f8f9fa;
+            color: #212529;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+        .container {
+            max-width: 1600px; width: 100%; background: #ffffff; border-radius: 16px;
+            padding: 40px; box-shadow: 0 16px 48px rgba(0,0,0,0.1);
+        }
+        h1 {
+            text-align: center; color: #2c3e50; margin-bottom: 10px;
+            font-size: 2.5em; font-weight: 700;
+        }
+        p.subtitle {
+            text-align: center; color: #7f8c8d; margin-top: 0;
+            margin-bottom: 30px; font-size: 1.5em;
+        }
+        .visualization-area { display: flex; align-items: center; }
+        .y-axis-label-container {
+            writing-mode: vertical-rl;
+            transform: rotate(180deg);
+            text-align: center;
+            margin-right: 24px;
+        }
+        .charts-grid-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 50px 40px;
+            flex-grow: 1;
+        }
+        .small-chart-container { position: relative; }
+        .small-chart-title {
+            text-align: center;
+            font-size: 1.6em;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+        .x-axis-label-container { text-align: center; margin-top: 10px; }
+        .axis path, .axis line { stroke: #bdc3c7; }
+        .axis text { font-size: 24px; fill: #7f8c8d; }
+        .axis-label { font-size: 24px; font-weight: 500; fill: #34495e; }
+        .grid line { stroke: #ecf0f1; stroke-dasharray: 3,3; }
+        .pareto-line { fill: none; stroke-width: 2.5px; }
+        .pareto-label {
+            font-size: 24px;
+            font-weight: 600;
+            text-anchor: middle;
+            pointer-events: none;
+        }
+        .model-legend-container {
+            margin-top: 40px;
+            padding-top: 25px;
+            border-top: 2px solid #e9ecef;
+        }
+        .model-legend-container h3 {
+             text-align: center;
+             font-size: 1.5em;
+             margin-top: 0;
+             margin-bottom: 25px;
+             color: #2c3e50;
+        }
+        .legend-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 10px 25px;
+        }
+        .legend-item { display: flex; align-items: center; font-size: 24px; }
+        .legend-symbol {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            margin-right: 10px;
+            flex-shrink: 0;
+        }
+        .tooltip {
+            position: absolute; background: rgba(44, 62, 80, 0.97); color: white;
+            padding: 15px; border-radius: 8px; font-size: 30px; line-height: 1.6;
+            pointer-events: none; opacity: 0; transition: opacity 0.2s ease, transform 0.2s ease;
+            z-index: 10; box-shadow: 0 8px 24px rgba(0,0,0,0.2); max-width: 320px;
+        }
+        .tooltip strong { font-size: 1.1em; }
+        .footer { text-align: center; margin-top: 40px; font-size: 0.9em; color: #95a5a6; }
+    </style>
+</head>
+<body>
+    <div class="container">
+<!--        <h1>Multi-Benchmark Model Performance Analysis</h1>-->
+<!--        <p class="subtitle">Comparing Pareto Fronts for PGB, GUE, GB, and RGB Benchmarks</p>-->
+
+        <div class="visualization-area">
+            <div class="y-axis-label-container">
+                <p class="axis-label">Mean Performance Z-Score (Higher is Better)</p>
+            </div>
+            <div id="charts-grid" class="charts-grid-container"></div>
+        </div>
+        <div class="x-axis-label-container">
+            <p class="axis-label">Parameter Count (Millions, sqrt scale)</p>
+        </div>
+
+        <div id="model-legend" class="model-legend-container"></div>
+
+        <div class="tooltip" id="tooltip"></div>
+        <p class="footer">Generated on: <span id="generation-date"></span></p>
+    </div>
+
+    <script src="pareto_data.js"></script>
+    <script>
+    document.addEventListener('DOMContentLoaded', function () {
+
+        document.getElementById('generation-date').textContent = new Date().toLocaleDateString('en-US', {
+            year: 'numeric', month: 'long', day: 'numeric'
+        });
+
+        const allData = processAllData();
+        const chartData = allData.filter(d => d.params && d.params > 0);
+
+        const colorSchemes = {
+            'PGB': { pareto: '#2980b9', dominated: '#a9cce3' },
+            'GUE': { pareto: '#27ae60', dominated: '#a3e4d7' },
+            'GB':  { pareto: '#d35400', dominated: '#f5cba7' },
+            'RGB': { pareto: '#8e44ad', dominated: '#d7bde2' }
+        };
+
+        const benchmarkMap = {
+            'PGB': 'Plant Genomic Benchmark (PGB)',
+            'GUE': 'Genomic Understanding Evaluation (GUE)',
+            'GB': 'Genomic Benchmark (GB)',
+            'RGB': 'RNA Genomic Benchmark (RGB)'
+        };
+        const benchmarks = ['PGB', 'GUE', 'GB', 'RGB'];
+
+        const allModelNames = [...new Set(chartData.map(d => d.model))].sort();
+        const customColors = [...d3.schemeTableau10, ...d3.schemeSet3];
+        const modelColorScale = d3.scaleOrdinal(customColors).domain(allModelNames);
+
+        buildCharts(chartData, benchmarks, colorSchemes, modelColorScale);
+        buildModelLegend(allModelNames, modelColorScale);
+
+        function processAllData() {
+            const standardizeName = (name) => name.toLowerCase().replace(/[^a-z0-9]/g, '');
+            const paramsMap = new Map(paramsData.map(([name, params]) => [standardizeName(name), params]));
+
+            function processBenchmark(data, benchmarkName, lowerIsBetterMetrics = []) {
+                data.forEach(d => {
+                    d.params = paramsMap.get(standardizeName(d.model));
+                    d.benchmark = benchmarkName;
+                });
+                const metrics = Object.keys(data[0]).filter(k => !['model', 'params', 'benchmark'].includes(k));
+                metrics.forEach(metric => {
+                    const values = data.map(d => d[metric]).filter(v => v !== null && !isNaN(v));
+                    if(values.length === 0) return;
+                    const mean = d3.mean(values);
+                    const stdDev = d3.deviation(values);
+                    data.forEach(d => {
+                        const z = stdDev > 0 ? (d[metric] - mean) / stdDev : 0;
+                        d[metric + '_z'] = lowerIsBetterMetrics.includes(metric) ? -z : z;
+                    });
+                });
+                data.forEach(d => {
+                    let total_z = 0, count = 0;
+                    metrics.forEach(metric => { if (d[metric + '_z'] !== undefined) { total_z += d[metric + '_z']; count++; } });
+                    d.performance_score = count > 0 ? total_z / count : 0;
+                });
+                data.forEach(d => {
+                    d.isPareto = !data.some(other => d !== other && (other.params <= d.params && other.performance_score >= d.performance_score) && (other.params < d.params || other.performance_score > d.performance_score));
+                });
+                return data;
+            }
+            const processedPGB = processBenchmark(pgbData, 'PGB', ['PromStr_RMSE', 'TermStr_RMSE', 'GeneExp_RMSE']);
+            const processedGUE = processBenchmark(gueData, 'GUE');
+            const processedGB = processBenchmark(gbData, 'GB');
+            const processedRGB = processBenchmark(rgbData, 'RGB', ['mRNA_RMSE']);
+            return [...processedPGB, ...processedGUE, ...processedGB, ...processedRGB];
+        }
+
+        function buildModelLegend(modelNames, colorScale) {
+            const legendContainer = d3.select("#model-legend");
+            const grid = legendContainer.append("div").attr("class", "legend-grid");
+
+            const items = grid.selectAll(".legend-item").data(modelNames).enter()
+                .append("div").attr("class", "legend-item");
+
+            items.append("div").attr("class", "legend-symbol").style("background-color", d => colorScale(d));
+            items.append("span").text(d => d);
+            legendContainer.append("h3").text("Outer and inner circle color indicates different benchmarks and models");
+        }
+
+        function buildCharts(chartData, benchmarks, colorSchemes, modelColorScale) {
+            const tooltip = d3.select("#tooltip");
+            const singleChartFullWidth = 720;
+            const margin = { top: 30, right: 15, bottom: 40, left: 45 };
+            const width = singleChartFullWidth - margin.left - margin.right;
+            const height = width / 1.5;
+
+            const globalXDomain = [0, d3.max(chartData, d => d.params)];
+            const globalYDomain = d3.extent(chartData, d => d.performance_score);
+
+            const xScale = d3.scaleSqrt().domain(globalXDomain).range([0, width]).nice();
+            const yScale = d3.scaleLinear().domain(globalYDomain).range([height, 0]).nice(5);
+
+            benchmarks.forEach(benchmarkShortName => {
+                const benchmarkData = chartData.filter(d => d.benchmark === benchmarkShortName);
+                const container = d3.select('#charts-grid').append('div').attr('class', 'small-chart-container');
+
+                container.append('h2')
+                    .attr('class', 'small-chart-title')
+                    .style('color', colorSchemes[benchmarkShortName].pareto)
+                    .text(benchmarkMap[benchmarkShortName]);
+
+                const svg = container.append('svg')
+                    .attr('width', width + margin.left + margin.right)
+                    .attr('height', height + margin.top + margin.bottom)
+                    .append('g').attr('transform', `translate(${margin.left},${margin.top})`);
+
+                svg.append("g").attr("class", "grid").call(d3.axisBottom(xScale).ticks(5).tickSize(-height).tickFormat(""));
+                svg.append("g").attr("class", "grid").call(d3.axisLeft(yScale).ticks(5).tickSize(-width).tickFormat(""));
+                svg.append("g").attr("class", "axis").attr("transform", `translate(0,${height})`).call(d3.axisBottom(xScale).ticks(5));
+                svg.append("g").attr("class", "axis").call(d3.axisLeft(yScale).ticks(5));
+
+                const chartArea = svg.append("g");
+
+                // --- NEW: Add shaded area for the dominated region ---
+                const paretoPoints = benchmarkData.filter(d => d.isPareto).sort((a,b) => a.params - b.params);
+                if (paretoPoints.length > 1) {
+                    const areaGenerator = d3.area()
+                        .x(d => xScale(d.params))
+                        .y0(height) // Bottom of the chart
+                        .y1(d => yScale(d.performance_score))
+                        .curve(d3.curveMonotoneX); // Smooth the curve
+
+                    chartArea.append("path")
+                        .datum(paretoPoints)
+                        .attr("fill", colorSchemes[benchmarkShortName].dominated)
+                        .attr("opacity", 0.4)
+                        .attr("d", areaGenerator);
+                }
+
+                chartArea.selectAll(".point").data(benchmarkData).enter().append("circle")
+                    .attr("cx", d => xScale(d.params)).attr("cy", d => yScale(d.performance_score))
+                    .attr("r", d => d.isPareto ? 10 : 7) // INCREASED: Circle radii
+                    .attr("fill", d => modelColorScale(d.model))
+                    .attr("stroke", d => colorSchemes[d.benchmark].pareto)
+                    .attr("stroke-width", d => d.isPareto ? 2.5 : 1.5)
+                    .style("cursor", "pointer")
+                    .on("mouseover", (event, d) => {
+                        d3.select(event.currentTarget).raise().transition().duration(100)
+                          .attr("r", 16) // INCREASED: Hover radius
+                          .attr("stroke-width", 3);
+                        tooltip.html(`<strong>${d.model} (${d.benchmark})</strong><br/>Size: ${d.params}M Params<br/>Score: ${d.performance_score.toFixed(2)}`).style("opacity", 1);
+                    })
+                    .on("mousemove", (event) => tooltip.style("left", (event.pageX + 15) + "px").style("top", (event.pageY + 15) + "px"))
+                    .on("mouseout", (event, d) => {
+                        tooltip.style("opacity", 0);
+                        d3.select(event.currentTarget).transition().duration(100)
+                          .attr("r", d.isPareto ? 10 : 7) // INCREASED: Reset to new radii
+                          .attr("stroke-width", d.isPareto ? 2.5 : 1.5);
+                    });
+
+                chartArea.append("path").datum(paretoPoints)
+                    .attr("class", "pareto-line").attr("d", d3.line().x(p => xScale(p.params)).y(p => yScale(p.performance_score)).curve(d3.curveMonotoneX)) // Added curve for consistency
+                    .attr("stroke", colorSchemes[benchmarkShortName].pareto);
+
+                chartArea.selectAll(".pareto-label")
+                    .data(benchmarkData.filter(d => d.isPareto))
+                    .enter()
+                    .append("text")
+                    .attr("class", "pareto-label")
+                    .attr("x", d => xScale(d.params))
+                    .attr("y", d => yScale(d.performance_score))
+                    .attr("dy", -20) // INCREASED: Offset to appear above the larger data point
+                    .attr("fill", colorSchemes[benchmarkShortName].pareto)
+                    .text(d => d.model);
+            });
+        }
+    });
+    </script>
+</body>
+</html>
