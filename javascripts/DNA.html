@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multi-Color Bubble DNA</title>
+    <style>
+        /* 强制让背景撑满屏幕，防止出现白边 */
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+        #canvas-container {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 1; 
+        }
+    </style>
+</head>
+<body>
+
+    <div id="canvas-container"></div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+    <script>
+        // ==========================================
+        //        全能参数控制区域 (CONFIG)
+        // ==========================================
+        const config = {
+            // --- 1. 背景颜色控制 ---
+            bgTop: '#4e6688',      // 顶部颜色
+            bgBottom: '#e9ebee',   // 底部颜色
+            
+            // --- 2. 漂浮微粒控制  ---
+            floatingParticleCount: 200, 
+            
+            // --- 3. 球球颜色控制 ---
+            // 基础渐变
+            gradientTop: 0xe9ebee,    
+            gradientBottom: 0x314668, 
+            
+            // 杂色调色盘
+            mixColors: [
+                0xFFFFFF, // 纯白
+                0xA0CFFF, // 亮蓝
+                0x5D9CEC, // 中蓝
+                0x7092c2  // 灰蓝
+            ], 
+            mixRatio: 1, 
+
+            // --- 4. 结构与肉感 ---
+            rungCount: 15,         
+            strandThickness: 1.8,  
+            bubbleDensity: 10,     
+            
+            // --- 5. 位置与基础参数 ---
+            positionX: 8,          
+            tiltAngle: 0.5,        
+            scale: 1.1,            
+            roughness: 0.6, metalness: 0.3, 
+            height: 30, radius: 5, turns: 1.2
+        };
+
+        // ==========================================
+        //           核心渲染逻辑
+        // ==========================================
+
+        // --- 自动修复颜色格式的辅助函数 ---
+        function toCssColor(val) {
+            // 如果是 0x... 数字，转成 '#...' 字符串
+            if (typeof val === 'number') {
+                return '#' + val.toString(16).padStart(6, '0');
+            }
+            return val; // 如果已经是字符串，直接返回
+        }
+
+        // 1. 设置网页背景 (从顶部到底部的线性渐变)
+        const cssTop = toCssColor(config.bgTop);
+        const cssBottom = toCssColor(config.bgBottom);
+        document.body.style.background = `linear-gradient(to bottom, ${cssTop} 0%, ${cssBottom} 100%)`;
+
+        const container = document.getElementById('canvas-container');
+        const scene = new THREE.Scene();
+        
+        // 2. 设置雾化 (Three.js 需要数字或 Color 对象)
+        // 这里我们把颜色转给 Three.js 使用
+        scene.fog = new THREE.FogExp2(new THREE.Color(cssBottom).getHex(), 0.02); 
+
+        const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 100);
+        camera.position.set(0, 0, 25); 
+
+        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(window.devicePixelRatio);
+        renderer.shadowMap.enabled = true;
+        renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+        container.appendChild(renderer.domElement);
+
+        const material = new THREE.MeshStandardMaterial({
+            color: 0xffffff,       
+            roughness: config.roughness, 
+            metalness: config.metalness,
+            flatShading: false
+        });
+
+        const maxParticles = 10000; 
+        const geometry = new THREE.SphereGeometry(1, 16, 16);
+        const mesh = new THREE.InstancedMesh(geometry, material, maxParticles);
+        mesh.castShadow = true;
+        mesh.receiveShadow = true;
+
+        const dummy = new THREE.Object3D();
+        const colorStart = new THREE.Color(config.gradientTop);
+        const colorEnd = new THREE.Color(config.gradientBottom);
+        
+        const mixColorObjs = config.mixColors.map(c => new THREE.Color(c));
+        
+        let particleCount = 0;
+
+        function placeBubbleCluster(x, y, z, baseGradientColor, thickness) {
+            if(particleCount >= maxParticles) return;
+
+            for(let i=0; i<config.bubbleDensity; i++) {
+                if(particleCount >= maxParticles) break;
+
+                const offsetX = (Math.random() - 0.5) * thickness;
+                const offsetY = (Math.random() - 0.5) * thickness;
+                const offsetZ = (Math.random() - 0.5) * thickness;
+                dummy.position.set(x + offsetX, y + offsetY, z + offsetZ);
+                
+                const scale = 0.15 + Math.random() * 0.25; 
+                dummy.scale.set(scale, scale, scale);
+                dummy.updateMatrix();
+                mesh.setMatrixAt(particleCount, dummy.matrix);
+                
+                let finalColor;
+                if (Math.random() < config.mixRatio && mixColorObjs.length > 0) {
+                    const randomIndex = Math.floor(Math.random() * mixColorObjs.length);
+                    finalColor = mixColorObjs[randomIndex].clone();
+                } else {
+                    finalColor = baseGradientColor.clone();
+                }
+
+                const hsl = {};
+                finalColor.getHSL(hsl);
+                finalColor.setHSL(hsl.h, hsl.s, hsl.l + (Math.random() - 0.5) * 0.1);
+                
+                mesh.setColorAt(particleCount, finalColor);
+                particleCount++;
+            }
+        }
+
+        const steps = 120;
+        for (let i = 0; i <= steps; i++) {
+            const progress = i / steps;
+            const angle = (progress - 0.5) * Math.PI * 2 * config.turns;
+            const y = (progress - 0.5) * config.height;
+            const gradColor = new THREE.Color().lerpColors(colorStart, colorEnd, progress);
+
+            const x1 = Math.cos(angle) * config.radius;
+            const z1 = Math.sin(angle) * config.radius;
+            placeBubbleCluster(x1, y, z1, gradColor, config.strandThickness);
+
+            const x2 = Math.cos(angle + Math.PI) * config.radius;
+            const z2 = Math.sin(angle + Math.PI) * config.radius;
+            placeBubbleCluster(x2, y, z2, gradColor, config.strandThickness);
+        }
+
+        const rungColor = new THREE.Color(0xA0CFFF); 
+        for (let i = 1; i <= config.rungCount; i++) {
+            const progress = i / (config.rungCount + 1);
+            const angle = (progress - 0.5) * Math.PI * 2 * config.turns;
+            const y = (progress - 0.5) * config.height;
+
+            const x1 = Math.cos(angle) * config.radius;
+            const z1 = Math.sin(angle) * config.radius;
+            const x2 = Math.cos(angle + Math.PI) * config.radius;
+            const z2 = Math.sin(angle + Math.PI) * config.radius;
+
+            const particlesInRung = 35; 
+            for(let j=0; j<=particlesInRung; j++) {
+                const ratio = j / particlesInRung;
+                const px = x1 + (x2 - x1) * ratio;
+                const pz = z1 + (z2 - z1) * ratio;
+
+                dummy.position.set(px + (Math.random()-0.5)*0.5, y + (Math.random()-0.5)*0.5, pz + (Math.random()-0.5)*0.5);
+                const s = 0.2 + Math.random() * 0.1;
+                dummy.scale.set(s,s,s);
+                dummy.updateMatrix();
+                mesh.setMatrixAt(particleCount, dummy.matrix);
+                
+                if(Math.random() > 0.7) mesh.setColorAt(particleCount, new THREE.Color(0xffffff));
+                else mesh.setColorAt(particleCount, rungColor);
+                
+                particleCount++;
+            }
+        }
+
+        for(let i=0; i < config.floatingParticleCount; i++) {
+            if(particleCount >= maxParticles) break;
+            const range = 30; 
+            dummy.position.set(
+                (Math.random()-0.5)*range, 
+                (Math.random()-0.5)*config.height * 1.5, 
+                (Math.random()-0.5)*range
+            );
+            const s = 0.05 + Math.random() * 0.15; 
+            dummy.scale.set(s,s,s);
+            dummy.updateMatrix();
+            mesh.setMatrixAt(particleCount, dummy.matrix);
+            // 微粒颜色：用一点淡蓝色，在深色背景下会很好看
+            mesh.setColorAt(particleCount, new THREE.Color(0x88aabb)); 
+            particleCount++;
+        }
+
+        mesh.rotation.z = config.tiltAngle;
+        mesh.position.x = config.positionX;
+        mesh.scale.set(config.scale, config.scale, config.scale);
+
+        scene.add(mesh);
+
+        const ambient = new THREE.AmbientLight(0xffffff, 0.7); 
+        scene.add(ambient);
+        const dirLight = new THREE.DirectionalLight(0xffffff, 0.9);
+        dirLight.position.set(-10, 20, 20);
+        dirLight.castShadow = true;
+        scene.add(dirLight);
+        const bottomLight = new THREE.DirectionalLight(0xA0CFFF, 0.5);
+        bottomLight.position.set(0, -20, 10);
+        scene.add(bottomLight);
+
+        function animate() {
+            requestAnimationFrame(animate);
+            mesh.rotation.y += 0.002;
+            renderer.render(scene, camera);
+        }
+        animate();
+
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+    </script>
+</body>
+</html>
+
