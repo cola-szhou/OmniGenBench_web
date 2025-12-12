@@ -29,34 +29,16 @@
         // ==========================================
         //        全能参数控制区域 (CONFIG)
         // ==========================================
-        const config = {
-            // --- 1. 背景颜色控制 ---
-            bgTop: '#4e6688',      // 顶部颜色
-            bgBottom: '#e9ebee',   // 底部颜色
-            
-            // --- 2. 漂浮微粒控制  ---
+        const baseConfig = {
+            // --- 漂浮微粒控制  ---
             floatingParticleCount: 200, 
-            
-            // --- 3. 球球颜色控制 ---
-            // 基础渐变
-            gradientTop: 0xe9ebee,    
-            gradientBottom: 0x314668, 
-            
-            // 杂色调色盘
-            mixColors: [
-                0xFFFFFF, // 纯白
-                0xA0CFFF, // 亮蓝
-                0x5D9CEC, // 中蓝
-                0x7092c2  // 灰蓝
-            ], 
-            mixRatio: 1, 
 
-            // --- 4. 结构与肉感 ---
+            // --- 结构与肉感 ---
             rungCount: 15,         
             strandThickness: 1.8,  
             bubbleDensity: 10,     
             
-            // --- 5. 位置与基础参数 ---
+            // --- 位置与基础参数 ---
             positionX: 8,          
             tiltAngle: 0.5,        
             scale: 1.1,            
@@ -64,31 +46,51 @@
             height: 30, radius: 5, turns: 1.2
         };
 
+        const themes = {
+            light: {
+                bgTop: '#4e6688',      
+                bgBottom: '#e9ebee',   
+                gradientTop: 0xe9ebee,    
+                gradientBottom: 0x314668, 
+                mixColors: [0xFFFFFF, 0xA0CFFF, 0x5D9CEC, 0x7092c2], 
+                mixRatio: 1, 
+                rungColor: 0xA0CFFF,
+                particleColor: 0x88aabb,
+                fogColor: '#e9ebee'
+            },
+            slate: {
+                bgTop: '#101217',      // Very dark at top
+                bgBottom: '#262831',   // Matches slate bg
+                gradientTop: 0x2c3e50, 
+                gradientBottom: 0x4e6688,
+                mixColors: [0xe3e3e3, 0x5c7aa6, 0x4e6688, 0x2c3e50], // Muted cool tones
+                mixRatio: 1,
+                rungColor: 0x5c7aa6,
+                particleColor: 0x4e6688,
+                fogColor: '#1e2029'
+            }
+        };
+
+        let config = { ...baseConfig, ...themes.light };
+        let mesh, material, geometry;
+        let particleCount = 0;
+        const dummy = new THREE.Object3D();
+
         // ==========================================
         //           核心渲染逻辑
         // ==========================================
 
         // --- 自动修复颜色格式的辅助函数 ---
         function toCssColor(val) {
-            // 如果是 0x... 数字，转成 '#...' 字符串
             if (typeof val === 'number') {
                 return '#' + val.toString(16).padStart(6, '0');
             }
-            return val; // 如果已经是字符串，直接返回
+            return val; 
         }
-
-        // 1. 设置网页背景 (从顶部到底部的线性渐变)
-        const cssTop = toCssColor(config.bgTop);
-        const cssBottom = toCssColor(config.bgBottom);
-        document.body.style.background = `linear-gradient(to bottom, ${cssTop} 0%, ${cssBottom} 100%)`;
 
         const container = document.getElementById('canvas-container');
         const scene = new THREE.Scene();
         
-        // 2. 设置雾化 (Three.js 需要数字或 Color 对象)
-        // 这里我们把颜色转给 Three.js 使用
-        scene.fog = new THREE.FogExp2(new THREE.Color(cssBottom).getHex(), 0.02); 
-
         const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 100);
         camera.position.set(0, 0, 25); 
 
@@ -99,129 +101,7 @@
         renderer.shadowMap.type = THREE.PCFSoftShadowMap;
         container.appendChild(renderer.domElement);
 
-        const material = new THREE.MeshStandardMaterial({
-            color: 0xffffff,       
-            roughness: config.roughness, 
-            metalness: config.metalness,
-            flatShading: false
-        });
-
-        const maxParticles = 10000; 
-        const geometry = new THREE.SphereGeometry(1, 16, 16);
-        const mesh = new THREE.InstancedMesh(geometry, material, maxParticles);
-        mesh.castShadow = true;
-        mesh.receiveShadow = true;
-
-        const dummy = new THREE.Object3D();
-        const colorStart = new THREE.Color(config.gradientTop);
-        const colorEnd = new THREE.Color(config.gradientBottom);
-        
-        const mixColorObjs = config.mixColors.map(c => new THREE.Color(c));
-        
-        let particleCount = 0;
-
-        function placeBubbleCluster(x, y, z, baseGradientColor, thickness) {
-            if(particleCount >= maxParticles) return;
-
-            for(let i=0; i<config.bubbleDensity; i++) {
-                if(particleCount >= maxParticles) break;
-
-                const offsetX = (Math.random() - 0.5) * thickness;
-                const offsetY = (Math.random() - 0.5) * thickness;
-                const offsetZ = (Math.random() - 0.5) * thickness;
-                dummy.position.set(x + offsetX, y + offsetY, z + offsetZ);
-                
-                const scale = 0.15 + Math.random() * 0.25; 
-                dummy.scale.set(scale, scale, scale);
-                dummy.updateMatrix();
-                mesh.setMatrixAt(particleCount, dummy.matrix);
-                
-                let finalColor;
-                if (Math.random() < config.mixRatio && mixColorObjs.length > 0) {
-                    const randomIndex = Math.floor(Math.random() * mixColorObjs.length);
-                    finalColor = mixColorObjs[randomIndex].clone();
-                } else {
-                    finalColor = baseGradientColor.clone();
-                }
-
-                const hsl = {};
-                finalColor.getHSL(hsl);
-                finalColor.setHSL(hsl.h, hsl.s, hsl.l + (Math.random() - 0.5) * 0.1);
-                
-                mesh.setColorAt(particleCount, finalColor);
-                particleCount++;
-            }
-        }
-
-        const steps = 120;
-        for (let i = 0; i <= steps; i++) {
-            const progress = i / steps;
-            const angle = (progress - 0.5) * Math.PI * 2 * config.turns;
-            const y = (progress - 0.5) * config.height;
-            const gradColor = new THREE.Color().lerpColors(colorStart, colorEnd, progress);
-
-            const x1 = Math.cos(angle) * config.radius;
-            const z1 = Math.sin(angle) * config.radius;
-            placeBubbleCluster(x1, y, z1, gradColor, config.strandThickness);
-
-            const x2 = Math.cos(angle + Math.PI) * config.radius;
-            const z2 = Math.sin(angle + Math.PI) * config.radius;
-            placeBubbleCluster(x2, y, z2, gradColor, config.strandThickness);
-        }
-
-        const rungColor = new THREE.Color(0xA0CFFF); 
-        for (let i = 1; i <= config.rungCount; i++) {
-            const progress = i / (config.rungCount + 1);
-            const angle = (progress - 0.5) * Math.PI * 2 * config.turns;
-            const y = (progress - 0.5) * config.height;
-
-            const x1 = Math.cos(angle) * config.radius;
-            const z1 = Math.sin(angle) * config.radius;
-            const x2 = Math.cos(angle + Math.PI) * config.radius;
-            const z2 = Math.sin(angle + Math.PI) * config.radius;
-
-            const particlesInRung = 35; 
-            for(let j=0; j<=particlesInRung; j++) {
-                const ratio = j / particlesInRung;
-                const px = x1 + (x2 - x1) * ratio;
-                const pz = z1 + (z2 - z1) * ratio;
-
-                dummy.position.set(px + (Math.random()-0.5)*0.5, y + (Math.random()-0.5)*0.5, pz + (Math.random()-0.5)*0.5);
-                const s = 0.2 + Math.random() * 0.1;
-                dummy.scale.set(s,s,s);
-                dummy.updateMatrix();
-                mesh.setMatrixAt(particleCount, dummy.matrix);
-                
-                if(Math.random() > 0.7) mesh.setColorAt(particleCount, new THREE.Color(0xffffff));
-                else mesh.setColorAt(particleCount, rungColor);
-                
-                particleCount++;
-            }
-        }
-
-        for(let i=0; i < config.floatingParticleCount; i++) {
-            if(particleCount >= maxParticles) break;
-            const range = 30; 
-            dummy.position.set(
-                (Math.random()-0.5)*range, 
-                (Math.random()-0.5)*config.height * 1.5, 
-                (Math.random()-0.5)*range
-            );
-            const s = 0.05 + Math.random() * 0.15; 
-            dummy.scale.set(s,s,s);
-            dummy.updateMatrix();
-            mesh.setMatrixAt(particleCount, dummy.matrix);
-            // 微粒颜色：用一点淡蓝色，在深色背景下会很好看
-            mesh.setColorAt(particleCount, new THREE.Color(0x88aabb)); 
-            particleCount++;
-        }
-
-        mesh.rotation.z = config.tiltAngle;
-        mesh.position.x = config.positionX;
-        mesh.scale.set(config.scale, config.scale, config.scale);
-
-        scene.add(mesh);
-
+        // Lights (global)
         const ambient = new THREE.AmbientLight(0xffffff, 0.7); 
         scene.add(ambient);
         const dirLight = new THREE.DirectionalLight(0xffffff, 0.9);
@@ -232,12 +112,228 @@
         bottomLight.position.set(0, -20, 10);
         scene.add(bottomLight);
 
+        // --- Scene Generation Function ---
+        function buildScene() {
+            // 1. Update Background
+            const cssTop = toCssColor(config.bgTop);
+            const cssBottom = toCssColor(config.bgBottom);
+            document.body.style.background = `linear-gradient(to bottom, ${cssTop} 0%, ${cssBottom} 100%)`;
+            
+            // 2. Update Fog
+            scene.fog = new THREE.FogExp2(new THREE.Color(config.fogColor).getHex(), 0.02);
+            
+            // 3. Update Bottom Light Color
+            bottomLight.color.setHex(typeof config.rungColor === 'number' ? config.rungColor : parseInt(config.rungColor.replace('#', ''), 16));
+
+            // 4. Remove old mesh if exists
+            if (mesh) {
+                scene.remove(mesh);
+                geometry.dispose();
+                material.dispose();
+            }
+
+            // 5. Create New Mesh
+            material = new THREE.MeshStandardMaterial({
+                color: 0xffffff,       
+                roughness: config.roughness, 
+                metalness: config.metalness,
+                flatShading: false
+            });
+
+            const maxParticles = 10000; 
+            geometry = new THREE.SphereGeometry(1, 16, 16);
+            mesh = new THREE.InstancedMesh(geometry, material, maxParticles);
+            mesh.castShadow = true;
+            mesh.receiveShadow = true;
+
+            const colorStart = new THREE.Color(config.gradientTop);
+            const colorEnd = new THREE.Color(config.gradientBottom);
+            const mixColorObjs = config.mixColors.map(c => new THREE.Color(c));
+            
+            particleCount = 0;
+
+            function placeBubbleCluster(x, y, z, baseGradientColor, thickness) {
+                if(particleCount >= maxParticles) return;
+
+                for(let i=0; i<config.bubbleDensity; i++) {
+                    if(particleCount >= maxParticles) break;
+
+                    const offsetX = (Math.random() - 0.5) * thickness;
+                    const offsetY = (Math.random() - 0.5) * thickness;
+                    const offsetZ = (Math.random() - 0.5) * thickness;
+                    dummy.position.set(x + offsetX, y + offsetY, z + offsetZ);
+                    
+                    const scale = 0.15 + Math.random() * 0.25; 
+                    dummy.scale.set(scale, scale, scale);
+                    dummy.updateMatrix();
+                    mesh.setMatrixAt(particleCount, dummy.matrix);
+                    
+                    let finalColor;
+                    if (Math.random() < config.mixRatio && mixColorObjs.length > 0) {
+                        const randomIndex = Math.floor(Math.random() * mixColorObjs.length);
+                        finalColor = mixColorObjs[randomIndex].clone();
+                    } else {
+                        finalColor = baseGradientColor.clone();
+                    }
+
+                    const hsl = {};
+                    finalColor.getHSL(hsl);
+                    finalColor.setHSL(hsl.h, hsl.s, hsl.l + (Math.random() - 0.5) * 0.1);
+                    
+                    mesh.setColorAt(particleCount, finalColor);
+                    particleCount++;
+                }
+            }
+
+            // Generate Strands
+            const steps = 120;
+            for (let i = 0; i <= steps; i++) {
+                const progress = i / steps;
+                const angle = (progress - 0.5) * Math.PI * 2 * config.turns;
+                const y = (progress - 0.5) * config.height;
+                const gradColor = new THREE.Color().lerpColors(colorStart, colorEnd, progress);
+
+                const x1 = Math.cos(angle) * config.radius;
+                const z1 = Math.sin(angle) * config.radius;
+                placeBubbleCluster(x1, y, z1, gradColor, config.strandThickness);
+
+                const x2 = Math.cos(angle + Math.PI) * config.radius;
+                const z2 = Math.sin(angle + Math.PI) * config.radius;
+                placeBubbleCluster(x2, y, z2, gradColor, config.strandThickness);
+            }
+
+            // Generate Rungs
+            const rungColorObj = new THREE.Color(config.rungColor); 
+            for (let i = 1; i <= config.rungCount; i++) {
+                const progress = i / (config.rungCount + 1);
+                const angle = (progress - 0.5) * Math.PI * 2 * config.turns;
+                const y = (progress - 0.5) * config.height;
+
+                const x1 = Math.cos(angle) * config.radius;
+                const z1 = Math.sin(angle) * config.radius;
+                const x2 = Math.cos(angle + Math.PI) * config.radius;
+                const z2 = Math.sin(angle + Math.PI) * config.radius;
+
+                const particlesInRung = 35; 
+                for(let j=0; j<=particlesInRung; j++) {
+                    const ratio = j / particlesInRung;
+                    const px = x1 + (x2 - x1) * ratio;
+                    const pz = z1 + (z2 - z1) * ratio;
+
+                    dummy.position.set(px + (Math.random()-0.5)*0.5, y + (Math.random()-0.5)*0.5, pz + (Math.random()-0.5)*0.5);
+                    const s = 0.2 + Math.random() * 0.1;
+                    dummy.scale.set(s,s,s);
+                    dummy.updateMatrix();
+                    mesh.setMatrixAt(particleCount, dummy.matrix);
+                    
+                    if(Math.random() > 0.7) mesh.setColorAt(particleCount, new THREE.Color(0xffffff));
+                    else mesh.setColorAt(particleCount, rungColorObj);
+                    
+                    particleCount++;
+                }
+            }
+
+            // Generate Floating Particles
+            const particleColorObj = new THREE.Color(config.particleColor);
+            for(let i=0; i < config.floatingParticleCount; i++) {
+                if(particleCount >= maxParticles) break;
+                const range = 30; 
+                dummy.position.set(
+                    (Math.random()-0.5)*range, 
+                    (Math.random()-0.5)*config.height * 1.5, 
+                    (Math.random()-0.5)*range
+                );
+                const s = 0.05 + Math.random() * 0.15; 
+                dummy.scale.set(s,s,s);
+                dummy.updateMatrix();
+                mesh.setMatrixAt(particleCount, dummy.matrix);
+                mesh.setColorAt(particleCount, particleColorObj); 
+                particleCount++;
+            }
+
+            mesh.rotation.z = config.tiltAngle;
+            mesh.position.x = config.positionX;
+            mesh.scale.set(config.scale, config.scale, config.scale);
+
+            scene.add(mesh);
+        }
+
         function animate() {
             requestAnimationFrame(animate);
-            mesh.rotation.y += 0.002;
+            if(mesh) mesh.rotation.y += 0.002;
             renderer.render(scene, camera);
         }
+        
+        // --- Theme Synchronization ---
+        function syncTheme() {
+            try {
+                let foundScheme = 'default';
+
+                // 1. From Parent
+                if (window.parent && window.parent.document) {
+                    const parentHtml = window.parent.document.documentElement;
+                    const parentBody = window.parent.document.body;
+                    const attr = parentBody ? parentBody.getAttribute('data-md-color-scheme') : null;
+                    const htmlAttr = parentHtml ? parentHtml.getAttribute('data-md-color-scheme') : null;
+                    foundScheme = attr || htmlAttr || 'default';
+                }
+                
+                // 2. Fallback to localStorage
+                if (foundScheme === 'default' || !foundScheme) {
+                     try {
+                        for (let i = 0; i < localStorage.length; i++) {
+                            const key = localStorage.key(i);
+                            if (key && key.includes('__palette')) {
+                                const item = JSON.parse(localStorage.getItem(key));
+                                if (item && item.color && item.color.scheme) {
+                                    foundScheme = item.color.scheme;
+                                    break;
+                                }
+                            }
+                        }
+                    } catch (e) {}
+                }
+
+                // 3. Fallback to system
+                if ((!foundScheme || foundScheme === 'default') && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                    foundScheme = 'slate';
+                }
+                
+                // Normalize scheme name
+                const isDark = foundScheme === 'slate' || foundScheme === 'dark';
+                const newConfig = isDark ? { ...baseConfig, ...themes.slate } : { ...baseConfig, ...themes.light };
+                
+                // Only rebuild if config effectively changed (checking bgTop as proxy) OR if it's the first run (no mesh)
+                if (newConfig.bgTop !== config.bgTop || !mesh) {
+                    config = newConfig;
+                    buildScene();
+                }
+
+            } catch (e) {
+                console.error("Theme sync error:", e);
+                // Ensure scene is built at least once if it hasn't been
+                if (!mesh) buildScene();
+            }
+        }
+
+        // Initial Build
+        syncTheme();
         animate();
+
+        // Listen for changes
+        if (window.parent && window.parent.document) {
+            const observer = new MutationObserver((mutations) => {
+                mutations.forEach((mutation) => {
+                    if (mutation.type === "attributes" && mutation.attributeName === "data-md-color-scheme") {
+                        syncTheme();
+                    }
+                });
+            });
+            observer.observe(window.parent.document.documentElement, { attributes: true });
+            if (window.parent.document.body) {
+                observer.observe(window.parent.document.body, { attributes: true });
+            }
+        }
 
         window.addEventListener('resize', () => {
             camera.aspect = window.innerWidth / window.innerHeight;

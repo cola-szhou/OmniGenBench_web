@@ -45,7 +45,7 @@ body.index .hero-caption {
   max-width: 55% !important;
   width: auto !important;
   /* background-color: #a9b7c3 !important; */
-  background-color: rgba(169, 183, 195, 0.7) !important;
+  background-color: var(--hero-caption-bg) !important;
   backdrop-filter: blur(10px) !important;
   -webkit-backdrop-filter: blur(10px) !important;
   border-radius: 12px !important;
@@ -62,14 +62,14 @@ body.index .hero-title {
   text-align: left;
   margin-bottom: 10px;
   margin-top: 0px;
-  color: white;
+  color: var(--hero-text-color) !important;
 }
 
 body.index .hero-description {
   text-align: left;
   margin-bottom: 20px;
   font-size: 1rem;
-  color: white;
+  color: var(--hero-text-color) !important;
 }
 
 body.index .hero-buttons {
@@ -79,7 +79,7 @@ body.index .hero-buttons {
 }
 
 body.index .hero-learn-more {
-  color: white;
+  color: var(--hero-learn-more-color);
   font-weight: bold;
 }
 
@@ -96,19 +96,35 @@ body.index .scroll-down {
 }
 
 body.index .scroll-text {
-  color: darkslategrey;
+  color: var(--scroll-text-color);
   font-size: 1rem;
   font-weight: bold;
   margin-bottom: 0px;
   text-align: center;
 }
 
-body.index .scroll-down .my-icon img {
+body.index .scroll-down .my-icon {
   width: 50px;
   height: 50px;
-  margin: 0px;
-  padding: 0px;
-  align-items: center;
+  margin: 0 auto;
+  
+  /* Masking to match text color */
+  background-color: var(--scroll-text-color);
+  -webkit-mask-image: url('../assets/images/down-chevron-svgrepo-com.svg');
+  mask-image: url('../assets/images/down-chevron-svgrepo-com.svg');
+  -webkit-mask-size: contain;
+  mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  mask-position: center;
+
+  /* Animation from .heart */
+  animation: heart 1000ms infinite;
+}
+
+body.index .scroll-down .my-icon img {
+  display: none;
 }
 
 .btn-outline-blue {
@@ -142,7 +158,7 @@ body.index .feature-item {
   display: flex;
   align-items: flex-start;
   gap: 1rem;
-  background-color: #f0f0f0;
+  /* background-color: #f0f0f0; */
   border-radius: 12px;
   padding: 1.5rem;
   transition: background-color 0.3s ease;
@@ -152,7 +168,7 @@ body.index .feature-icon {
   flex-shrink: 0;
   width: 40px;
   height: 40px;
-  background-color: #f0f0f0;
+  /* background-color: #f0f0f0; */
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -258,3 +274,96 @@ body.index .feature-text p {
 :root  > * {
   --md-primary-fg-color:        #4e6688;
 }
+
+  /* 默认浅色模式 (Light Mode) */
+  :root {
+    --bg-section-base: transparent;           /* 基础背景 (通常跟随主题默认) */
+    --bg-section-alt: #f5f6f8;               /* 交替背景 (浅灰色) */
+    --text-title-color: #2e3c50;             /* 标题颜色 */
+    --text-desc-color: #555555;              /* 描述文字颜色 */
+
+    /* Hero Section Variables - Light */
+    --hero-caption-bg: rgba(169, 183, 195, 0.7);
+    --hero-text-color: white;
+    --hero-learn-more-color: white;
+    --scroll-text-color: darkslategrey;
+    --scroll-icon-filter: none;
+  }
+
+  /* 深色模式适配 (Dark Mode - Slate) */
+  [data-md-color-scheme="slate"] {
+    --bg-section-base: transparent;
+    --bg-section-alt:rgb(38, 40, 49);               /* 深色模式下的交替背景 (比纯黑稍亮) */
+    --text-title-color: #e3e3e3;             /* 标题变白 */
+    --text-desc-color: #aebbc9;              /* 描述文字变浅灰 */
+
+    /* Hero Section Variables - Dark */
+    --hero-caption-bg: rgba(30, 32, 41, 0.6);
+    --hero-text-color: #e3e3e3;
+    --hero-learn-more-color: #e3e3e3;
+    --scroll-text-color: #aebbc9;
+    --scroll-icon-filter: invert(1) brightness(0.9);
+  }
+
+  /* 通用 Section 类：用于控制宽度和背景 */
+  .section-container {
+    width: 100vw;
+    position: relative;
+    left: 50%;
+    right: 50%;
+    margin-left: -50vw;
+    margin-right: -50vw;
+    padding: 60px 0; /* 上下内边距，让模块呼吸感更强 */
+  }
+
+  /* 偶数/奇数背景类 */
+  .bg-base {
+    background-color: var(--bg-section-base);
+  }
+  
+  .bg-alt {
+    background-color: var(--bg-section-alt);
+  }
+
+  /* 标题和文字颜色适配 */
+  h2, h3, .hero-title, .feature-header p {
+    color: var(--text-title-color) !important;
+  }
+  
+  p, .hero-description {
+    color: var(--text-desc-color) !important;
+  }
+
+  /* 修复 Feature Grid 在深色模式下的显示 */
+  .feature-text h3 {
+    margin-top: 0;
+  }
+  
+  /* 修复 Team 部分图片文字 */
+  .team-overlay {
+    color: #fff !important; /* 图片上的文字保持白色 */
+  }
+
+  .logo-dark {
+    display: none;
+  }
+  .logo-light {
+    display: block;
+  }
+
+  /* 深色模式（Slate）：隐藏浅色版，显示深色版 */
+  [data-md-color-scheme="slate"] .logo-light {
+    display: none;
+  }
+  [data-md-color-scheme="slate"] .logo-dark {
+    display: block;
+  }
+
+  /* 移除之前所有的 filter 和背景色补丁 */
+  [data-md-color-scheme="slate"] .partner-item {
+    background-color: transparent !important;
+    padding: 0;
+  }
+  [data-md-color-scheme="slate"] .partner-item img {
+    filter: none !important;
+  }

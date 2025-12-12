@@ -1157,7 +1157,7 @@
             A modular benchmarking platform for evaluating genomic foundation models (gFMs) across diverse tasks like RNA structure prediction, gene function classification, and multi-species generalization.
             </p>
             <div class="hero-buttons">
-                <a href="content/getting-started/basic-introduction" class="md-button md-button--primary">Quick Start</a>
+                <a href="content/getting-started/installation" class="md-button md-button--primary">Quick Start</a>
                 <a href="#features" class="btn-outline-blue hero-learn-more"> Learn More</a>
             </div>
         </div>
@@ -1171,10 +1171,11 @@
 </div>
 
 <!-- Features Section -->
-<div id="features" style="background-color: #f0f0f0; width: 100vw;">
+
+<div id="features" class="bg-alt">
     <div class="md-grid" style="height: 100%;">
         <div class="feature-header" style="padding-top: 100px;">
-            <p style="font-size: 2rem; font-weight: bold; text-align: center; margin-bottom: 10px; margin-top: 0px; color: black;">Everything you would expect</p>
+            <p style="font-size: 2rem; font-weight: bold; text-align: center; margin-bottom: 40px;">Everything you would expect</p>
         </div>
         <div style="padding-bottom: 100px;">
             <div class="features-grid">
@@ -1206,15 +1207,26 @@
                     <p>Pinpoint biological insight driving your model's predictions with built-in interpretation tools.</p>
                     </div>
                 </div>
-
             </div>
         </div>
     </div>
 </div>
 
 <!-- Bubble -->
-<iframe id="bubbleFrame" src="/javascripts/model_bubble.html"
-        width="100%" style="border:none; overflow:hidden;"></iframe>
+<!-- <iframe id="bubbleFrame" src="/javascripts/model_bubble.html"
+        width="100%" style="border:none; overflow:hidden;"></iframe> -->
+
+<div class="bg-base" style="padding-top: 20px; padding-bottom: 20px;">
+    <div class="feature-header" style="padding-top: 20px;">
+      <p style="font-size: 2rem; font-weight: bold; text-align: center; margin-bottom: 40px;">Evolution of Genomic Foundation Models</p>
+    </div>
+    <div class="md-grid bg-base">
+        <iframe id="bubbleFrame" src="/javascripts/model_bubble.html"
+                allowtransparency="true"
+                width="100%" 
+                style="border:none; overflow:hidden; background-color: transparent; color-scheme: light dark;"></iframe>
+    </div>
+</div>
 
 <!-- <iframe id="paretoFrame" src="/javascripts/pareto.html"
         width="100%" style="border:none; overflow:hidden;"></iframe> -->
@@ -1310,46 +1322,53 @@
 </div> -->
 
 <!-- Team Section -->
-<div class="Team-section" style="background-color: #f0f0f0;">
-  <div class="md-grid" style="padding-top: 10px;">
+<div class="Team-section bg-alt">
+  <div class="md-grid" style="padding-top: 10px">
     <div class="team-header" style="text-align: center; margin-bottom: 40px;">
       <h2 style="font-size: 2rem; font-weight: bold; color: black;">Meet the Team</h2>
       <p style="font-size: 1.1rem; color: #555;">The minds behind OmniGenBench</p>
     </div>
-    <div class="team-grid">
+    <div class="team-grid" style="padding-bottom: 20px">
       <figure class="team-figure">
-        <img src="assets/team/male.png" alt="Ke Li">
+        <img src="assets/team/KL.jpeg" alt="Ke Li">
         <figcaption class="team-overlay">
           Ke Li<br>
-          <span style="font-size:1rem; font-weight:normal;">Project Lead</span>
+          <span style="font-size:1rem; font-weight:normal;">Principal Investigator</span>
         </figcaption>
       </figure>
       <figure class="team-figure">
-        <img src="assets/team/male.png" alt="Bob Lee">
+        <img src="assets/team/HY.jpg" alt="Heng Yang">
         <figcaption class="team-overlay">
-          Bob Lee<br>
-          <span style="font-size:1rem; font-weight:normal;">Lead Engineer</span>
+          Heng Yang<br>
+          <span style="font-size:1rem; font-weight:normal;">Lead Developer</span>
         </figcaption>
       </figure>
       <figure class="team-figure">
-        <img src="assets/team/female.png" alt="Carol Smith">
+        <img src="assets/team/SZ.jpg" alt="Carol Smith">
         <figcaption class="team-overlay">
-          Carol Smith<br>
-          <span style="font-size:1rem; font-weight:normal;">Data Scientist</span>
+          Shasha Zhou<br>
+          <span style="font-size:1rem; font-weight:normal;">Lead Developer (XAI)</span>
         </figcaption>
       </figure>
       <figure class="team-figure">
-        <img src="assets/team/male.png" alt="Carol Smith">
+        <img src="assets/team/YL.jpg" alt="Carol Smith">
         <figcaption class="team-overlay">
-          Carol Smith<br>
-          <span style="font-size:1rem; font-weight:normal;">Data Scientist</span>
+          Yuan Li<br>
+          <span style="font-size:1rem; font-weight:normal;">Core Developer</span>
         </figcaption>
       </figure>
       <figure class="team-figure">
-        <img src="assets/team/female.png" alt="Carol Smith">
+        <img src="assets/team/MH.jpg" alt="Carol Smith">
         <figcaption class="team-overlay">
-          Carol Smith<br>
-          <span style="font-size:1rem; font-weight:normal;">Data Scientist</span>
+          Mingyu Huang<br>
+          <span style="font-size:1rem; font-weight:normal;">Contributor</span>
+        </figcaption>
+      </figure>
+      <figure class="team-figure">
+        <img src="assets/team/JC.jpg" alt="Carol Smith">
+        <figcaption class="team-overlay">
+          Jack Cole<br>
+          <span style="font-size:1rem; font-weight:normal;">Contributor</span>
         </figcaption>
       </figure>
     </div>
@@ -1357,20 +1376,15 @@
 </div>
 
 <!-- Partners Section -->
-<div class="partners-section" style="background-color: #f0f0f0;">
+<div class="partners-section bg-base">
   <div class="md-grid" style="padding-top: 20px; padding-bottom: 100px; width: 100%;">
     <div class="partners-header" style="text-align: center; margin-bottom: 40px;">
       <h2 style="font-size: 2rem; font-weight: bold; color: black;">Our Partners</h2>
     </div>
     <div class="partners-grid" style="display: flex; flex-direction: row; justify-content: center; gap: 40px;">
       <div class="partner-item">
-        <img src="assets/partners/jic-logo.svg" alt="JIC">
-      </div>
-      <div class="partner-item">
-        <img src="assets/partners/uoe-logo.svg" alt="UoE">
-      </div>
-      <div class="partner-item">
-        <img src="assets/partners/jic-logo.svg" alt="JIC">
+        <img src="assets/partners/uoe-logo.svg" alt="UoE" class="logo-light">
+        <img src="assets/partners/uoe-logo-dark.svg" alt="UoE" class="logo-dark">
       </div>
     </div>
   </div>

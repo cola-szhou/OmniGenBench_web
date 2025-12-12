@@ -5,34 +5,195 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Multi-Benchmark Model Efficiency Analysis</title>
     <script src="https://d3js.org/d3.v7.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono&display=swap" rel="stylesheet">
+    
+    <!-- Theme Sync Script -->
+    <script>
+        (function() {
+            function applyTheme(scheme) {
+                // 1. 设置透明背景
+                document.documentElement.style.backgroundColor = 'transparent';
+                if (document.body) {
+                    document.body.style.backgroundColor = 'transparent';
+                }
+
+                // 2. 设置 color-scheme
+                const isDark = scheme === 'slate' || scheme === 'dark';
+                document.documentElement.style.colorScheme = isDark ? 'dark' : 'light';
+
+                // 3. 设置 data-attribute
+                if (scheme) {
+                    document.documentElement.setAttribute('data-md-color-scheme', scheme);
+                    if (document.body) {
+                        document.body.setAttribute('data-md-color-scheme', scheme);
+                    }
+                }
+            }
+
+            function syncTheme() {
+                try {
+                    let foundScheme = null;
+
+                    // 1. 尝试从父页面获取
+                    if (window.parent && window.parent.document) {
+                        const parentHtml = window.parent.document.documentElement;
+                        const parentBody = window.parent.document.body;
+                        foundScheme = parentHtml.getAttribute('data-md-color-scheme') || 
+                                      (parentBody ? parentBody.getAttribute('data-md-color-scheme') : null);
+                    }
+
+                    // 2. LocalStorage Fallback
+                    if (!foundScheme) {
+                        try {
+                            for (let i = 0; i < localStorage.length; i++) {
+                                const key = localStorage.key(i);
+                                if (key && key.includes('__palette')) {
+                                    const item = JSON.parse(localStorage.getItem(key));
+                                    if (item && item.color && item.color.scheme) {
+                                        foundScheme = item.color.scheme;
+                                        break;
+                                    }
+                                }
+                            }
+                        } catch (e) {}
+                    }
+
+                    // 3. System Preference
+                    if (!foundScheme && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                        foundScheme = 'slate';
+                    }
+
+                    // Apply
+                    if (foundScheme) {
+                        applyTheme(foundScheme);
+                    } else {
+                        applyTheme(null);
+                    }
+
+                    // 4. Observer
+                    if (window.parent && window.parent.document) {
+                        const observer = new MutationObserver((mutations) => {
+                            mutations.forEach((mutation) => {
+                                if (mutation.type === "attributes" && mutation.attributeName === "data-md-color-scheme") {
+                                    const newScheme = mutation.target.getAttribute('data-md-color-scheme');
+                                    applyTheme(newScheme);
+                                }
+                            });
+                        });
+                        observer.observe(window.parent.document.documentElement, { attributes: true });
+                        if (window.parent.document.body) {
+                            observer.observe(window.parent.document.body, { attributes: true });
+                        }
+                    }
+
+                } catch (e) {
+                    console.log("Theme sync fallback", e);
+                    applyTheme(null);
+                }
+            }
+
+            syncTheme();
+            document.addEventListener('DOMContentLoaded', syncTheme);
+        })();
+    </script>
+
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap');
+        :root {
+            /* Light Mode Variables */
+            --text-main: #212529;
+            --text-secondary: #555555;
+            --heading-color: #2c3e50;
+            --axis-color: #bdc3c7;
+            --grid-line: #ecf0f1;
+            --tooltip-bg: rgba(44, 62, 80, 0.97);
+            --tooltip-text: white;
+            --container-shadow: none;
+            
+            /* Table Variables */
+            --table-header-bg: #f8f9fa;
+            --table-border: #dee2e6;
+            --table-row-hover: #f1f3f5;
+            --btn-bg: #e9ecef;
+            --btn-color: #495057;
+            --btn-active-bg: #4e6688;
+            --btn-active-color: white;
+        }
+
+        [data-md-color-scheme="slate"] {
+            /* Dark Mode Variables */
+            --text-main: #e3e3e3;
+            --text-secondary: #aebbc9;
+            --heading-color: #e3e3e3;
+            --axis-color: #555555;
+            --grid-line: #333333;
+            --tooltip-bg: rgba(255, 255, 255, 0.95);
+            --tooltip-text: black;
+
+            /* Table Variables */
+            --table-header-bg: #2c2f3b;
+            --table-border: #444;
+            --table-row-hover: #3a3d4a;
+            --btn-bg: #2c2f3b;
+            --btn-color: #aebbc9;
+            --btn-active-bg: #5c7aa6;
+            --btn-active-color: white;
+        }
+
         body {
-            font-family: 'Roboto Mono', monospace;
+            font-family: 'Roboto', sans-serif;
             margin: 0;
             /* padding: 30px; */
             padding-bottom: 100px;
-            background-color: #f8f9fa;
-            color: #212529;
+            background-color: transparent !important;
+            color: var(--text-main);
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            overflow: hidden;
+            /* overflow: hidden;  Allow scrolling for table */
+            transition: color 0.3s ease;
         }
         .container {
-            max-width: 1600px; width: 100%; background: #ffffff; border-radius: 16px;
-            padding: 40px; box-shadow: 0 16px 48px rgba(0,0,0,0.1);
+            max-width: 1600px; width: 100%; 
+            background: transparent !important; 
+            border-radius: 16px;
+            padding: 40px; 
+            box-shadow: var(--container-shadow);
         }
         h1 {
-            text-align: center; color: #2c3e50; margin-bottom: 10px;
+            text-align: center; color: var(--heading-color); margin-bottom: 10px;
             font-size: 2.5em; font-weight: 700;
         }
         p.subtitle {
-            text-align: center; color: #7f8c8d; margin-top: 0;
+            text-align: center; color: var(--text-secondary); margin-top: 0;
             margin-bottom: 30px; font-size: 1.5em;
         }
+        
+        /* View Switcher */
+        .view-switcher {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 30px;
+            gap: 10px;
+        }
+        .view-btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 20px;
+            background-color: var(--btn-bg);
+            color: var(--btn-color);
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            font-family: 'Roboto', sans-serif;
+        }
+        .view-btn.active {
+            background-color: var(--btn-active-bg);
+            color: var(--btn-active-color);
+        }
+
+        /* Chart Styles */
         .visualization-area { display: flex; align-items: center; }
         .y-axis-label-container {
             writing-mode: vertical-rl;
@@ -52,12 +213,15 @@
             font-size: 1.6em;
             font-weight: 600;
             margin-bottom: 20px;
+            color: var(--heading-color); 
         }
         .x-axis-label-container { text-align: center; margin-top: 10px; }
-        .axis path, .axis line { stroke: #bdc3c7; }
-        .axis text { font-size: 24px; fill: #7f8c8d; }
-        .axis-label { font-size: 24px; font-weight: 500; fill: #34495e; }
-        .grid line { stroke: #ecf0f1; stroke-dasharray: 3,3; }
+        
+        .axis path, .axis line { stroke: var(--axis-color); }
+        .axis text { font-size: 24px; fill: var(--text-secondary); }
+        .axis-label { font-size: 24px; font-weight: 500; fill: var(--heading-color); }
+        .grid line { stroke: var(--grid-line); stroke-dasharray: 3,3; }
+        
         .pareto-line { fill: none; stroke-width: 2.5px; }
         .pareto-label {
             font-size: 24px;
@@ -68,21 +232,21 @@
         .model-legend-container {
             margin-top: 40px;
             padding-top: 25px;
-            border-top: 2px solid #e9ecef;
+            border-top: 2px solid var(--grid-line);
         }
         .model-legend-container h3 {
              text-align: center;
              font-size: 1.5em;
              margin-top: 0;
              margin-bottom: 25px;
-             color: #2c3e50;
+             color: var(--heading-color);
         }
         .legend-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
             gap: 10px 25px;
         }
-        .legend-item { display: flex; align-items: center; font-size: 24px; }
+        .legend-item { display: flex; align-items: center; font-size: 24px; color: var(--text-main); }
         .legend-symbol {
             width: 24px;
             height: 24px;
@@ -91,13 +255,55 @@
             flex-shrink: 0;
         }
         .tooltip {
-            position: absolute; background: rgba(44, 62, 80, 0.97); color: white;
+            position: absolute; background: var(--tooltip-bg); color: var(--tooltip-text);
             padding: 15px; border-radius: 8px; font-size: 30px; line-height: 1.6;
             pointer-events: none; opacity: 0; transition: opacity 0.2s ease, transform 0.2s ease;
             z-index: 10; box-shadow: 0 8px 24px rgba(0,0,0,0.2); max-width: 320px;
         }
         .tooltip strong { font-size: 1.1em; }
-        .footer { text-align: center; margin-top: 40px; font-size: 0.9em; color: #95a5a6; }
+        .footer { text-align: center; margin-top: 40px; font-size: 0.9em; color: var(--text-secondary); }
+
+        /* Table Styles */
+        #table-container {
+            display: none;
+            width: 100%;
+            margin-top: 20px;
+        }
+        .benchmark-table-wrapper {
+            margin-bottom: 40px;
+            overflow-x: auto;
+        }
+        .benchmark-header {
+            font-size: 1.5em;
+            font-weight: 600;
+            color: var(--heading-color);
+            margin-bottom: 15px;
+            padding-left: 5px;
+            border-left: 5px solid var(--btn-active-bg);
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 16px;
+        }
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid var(--table-border);
+        }
+        th {
+            background-color: var(--table-header-bg);
+            color: var(--heading-color);
+            font-weight: 600;
+            white-space: nowrap;
+        }
+        tr:hover {
+            background-color: var(--table-row-hover);
+        }
+        td {
+            color: var(--text-main);
+        }
+
     </style>
 </head>
 <body>
@@ -105,29 +311,59 @@
 <!--        <h1>Multi-Benchmark Model Performance Analysis</h1>-->
 <!--        <p class="subtitle">Comparing Pareto Fronts for PGB, GUE, GB, and RGB Benchmarks</p>-->
 
-        <div class="visualization-area">
-            <div class="y-axis-label-container">
-                <p class="axis-label">Mean Performance Z-Score (Higher is Better)</p>
-            </div>
-            <div id="charts-grid" class="charts-grid-container"></div>
-        </div>
-        <div class="x-axis-label-container">
-            <p class="axis-label">Parameter Count (Millions, sqrt scale)</p>
+        <div class="view-switcher">
+            <button class="view-btn active" onclick="switchView('chart')">Chart View</button>
+            <button class="view-btn" onclick="switchView('table')">Table View</button>
         </div>
 
-        <div id="model-legend" class="model-legend-container"></div>
+        <!-- Chart View -->
+        <div id="chart-view">
+            <div class="visualization-area">
+                <div class="y-axis-label-container">
+                    <p class="axis-label">Mean Performance Z-Score (Higher is Better)</p>
+                </div>
+                <div id="charts-grid" class="charts-grid-container"></div>
+            </div>
+            <div class="x-axis-label-container">
+                <p class="axis-label">Parameter Count (Millions, sqrt scale)</p>
+            </div>
+
+            <div id="model-legend" class="model-legend-container"></div>
+        </div>
+
+        <!-- Table View -->
+        <div id="table-container"></div>
 
         <div class="tooltip" id="tooltip"></div>
-        <p class="footer">Generated on: <span id="generation-date"></span></p>
+        <!-- <p class="footer">Generated on: <span id="generation-date"></span></p> -->
     </div>
 
     <script src="pareto_data.js"></script>
     <script>
+    // Global switch function
+    function switchView(view) {
+        const chartView = document.getElementById('chart-view');
+        const tableView = document.getElementById('table-container');
+        const buttons = document.querySelectorAll('.view-btn');
+        
+        if (view === 'chart') {
+            chartView.style.display = 'block';
+            tableView.style.display = 'none';
+            buttons[0].classList.add('active');
+            buttons[1].classList.remove('active');
+        } else {
+            chartView.style.display = 'none';
+            tableView.style.display = 'block';
+            buttons[0].classList.remove('active');
+            buttons[1].classList.add('active');
+        }
+    }
+
     document.addEventListener('DOMContentLoaded', function () {
 
-        document.getElementById('generation-date').textContent = new Date().toLocaleDateString('en-US', {
-            year: 'numeric', month: 'long', day: 'numeric'
-        });
+        // document.getElementById('generation-date').textContent = new Date().toLocaleDateString('en-US', {
+        //     year: 'numeric', month: 'long', day: 'numeric'
+        // });
 
         const allData = processAllData();
         const chartData = allData.filter(d => d.params && d.params > 0);
@@ -153,8 +389,10 @@
 
         buildCharts(chartData, benchmarks, colorSchemes, modelColorScale);
         buildModelLegend(allModelNames, modelColorScale);
+        buildTables(); // New function call
 
         function processAllData() {
+            // ... (keep existing implementation)
             const standardizeName = (name) => name.toLowerCase().replace(/[^a-z0-9]/g, '');
             const paramsMap = new Map(paramsData.map(([name, params]) => [standardizeName(name), params]));
 
@@ -191,6 +429,8 @@
             return [...processedPGB, ...processedGUE, ...processedGB, ...processedRGB];
         }
 
+        // ... (keep buildModelLegend and buildCharts)
+
         function buildModelLegend(modelNames, colorScale) {
             const legendContainer = d3.select("#model-legend");
             const grid = legendContainer.append("div").attr("class", "legend-grid");
@@ -204,6 +444,7 @@
         }
 
         function buildCharts(chartData, benchmarks, colorSchemes, modelColorScale) {
+            // ... (keep existing implementation)
             const tooltip = d3.select("#tooltip");
             const singleChartFullWidth = 720;
             const margin = { top: 30, right: 15, bottom: 40, left: 45 };
@@ -290,6 +531,73 @@
                     .text(d => d.model);
             });
         }
+
+        function buildTables() {
+            const container = document.getElementById('table-container');
+            
+            // Define benchmarks data
+            const benchmarksData = [
+                { name: 'PGB', title: 'Plant Genomic Benchmark (PGB)', data: pgbData },
+                { name: 'GUE', title: 'Genomic Understanding Evaluation (GUE)', data: gueData },
+                { name: 'GB', title: 'Genomic Benchmark (GB)', data: gbData },
+                { name: 'RGB', title: 'RNA Genomic Benchmark (RGB)', data: rgbData }
+            ];
+
+            benchmarksData.forEach(benchmark => {
+                const wrapper = document.createElement('div');
+                wrapper.className = 'benchmark-table-wrapper';
+                
+                const header = document.createElement('div');
+                header.className = 'benchmark-header';
+                header.textContent = benchmark.title;
+                wrapper.appendChild(header);
+
+                const table = document.createElement('table');
+                const thead = document.createElement('thead');
+                const tbody = document.createElement('tbody');
+
+                if (benchmark.data.length > 0) {
+                    // Create Header Row
+                    const keys = Object.keys(benchmark.data[0]).filter(k => k !== 'model' && !k.endsWith('_z') && k !== 'performance_score' && k !== 'isPareto' && k !== 'benchmark' && k !== 'params');
+                    // Put model first
+                    const allColumns = ['Model', ...keys];
+                    
+                    const headerRow = document.createElement('tr');
+                    allColumns.forEach(col => {
+                        const th = document.createElement('th');
+                        th.textContent = col.replace(/_/g, ' '); // Clean up column names
+                        headerRow.appendChild(th);
+                    });
+                    thead.appendChild(headerRow);
+
+                    // Create Data Rows
+                    benchmark.data.forEach(row => {
+                        const tr = document.createElement('tr');
+                        
+                        // Model Name Cell
+                        const modelTd = document.createElement('td');
+                        modelTd.textContent = row.model;
+                        modelTd.style.fontWeight = '500';
+                        tr.appendChild(modelTd);
+
+                        // Metric Cells
+                        keys.forEach(key => {
+                            const td = document.createElement('td');
+                            const val = row[key];
+                            td.textContent = typeof val === 'number' ? val.toFixed(2) : val;
+                            tr.appendChild(td);
+                        });
+                        tbody.appendChild(tr);
+                    });
+                }
+
+                table.appendChild(thead);
+                table.appendChild(tbody);
+                wrapper.appendChild(table);
+                container.appendChild(wrapper);
+            });
+        }
+
     });
     </script>
 </body>
